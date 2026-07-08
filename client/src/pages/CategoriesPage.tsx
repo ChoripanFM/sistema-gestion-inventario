@@ -10,6 +10,7 @@ function CategoriesPage() {
   return (
     <div>
       <h2>Categorías</h2>
+      <h2 className="text-2xl font-bold text-blue-600">Categorías</h2>
       <CategoryTable categories={mockCategories} />
     </div>
   );
