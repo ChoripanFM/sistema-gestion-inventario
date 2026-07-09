@@ -4,35 +4,53 @@ interface CategoryTableProps {
   categories: Category[];
 }
 
-/**
- * Componente de presentación puro: recibe una lista de categorías
- * y las muestra en formato de tabla. No sabe de dónde vienen los datos
- * (mock o API real) — solo los renderiza.
- */
+const BADGE_COLORS = [
+  "bg-accent/15 text-accent",
+  "bg-success/15 text-success",
+  "bg-amber-500/15 text-amber-600",
+];
+
 function CategoryTable({ categories }: CategoryTableProps) {
   if (categories.length === 0) {
-    return <p>No hay categorías registradas todavía.</p>;
+    return (
+      <div className="bg-surface rounded-3x1 shadow-sm p-10 text-center text-muted text-sm">
+        No hay categorías registradas todavía.
+      </div>
+    );
   }
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Descripción</th>
-        </tr>
-      </thead>
-      <tbody>
-        {categories.map((category) => (
-          <tr key={category.id}>
-            <td>{category.id}</td>
-            <td>{category.name}</td>
-            <td>{category.description ?? "—"}</td>
+    <div className="bg-surface rounded-3xl shadow-sm overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-left text-[11px] uppercase tracking-wider text-muted">
+            <th className="px-6 py-4 font-medium">Categoría</th>
+            <th className="px-6 py-4 font-medium">Descripción</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {categories.map((category, index) => (
+            <tr key={category.id} className="border-t border-line hover:bg-bg/60">
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-display font-semibold text-xs ${
+                      BADGE_COLORS[index % BADGE_COLORS.length]
+                    }`}
+                  >
+                    {category.name.charAt(0).toUpperCase()}
+                  </span>
+                  <span className="font-medium">{category.name}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-muted">
+                {category.description ?? "—"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

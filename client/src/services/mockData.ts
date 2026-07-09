@@ -1,4 +1,4 @@
-import type { Category } from "../types";
+import type { Category, Product } from "../types";
 
 /**
  * Datos de prueba para desarrollar el frontend sin depender de la API real.
@@ -27,3 +27,39 @@ export const mockCategories: Category[] = [
     updated_at: "2026-01-17T14:20:00Z",
   },
 ];
+
+export const mockProducts: Product[] = [
+  {
+    id: 1,
+    name: "Audífonos Bluetooth",
+    description: "Audífonos inalámbricos con cancelación de ruido",
+    sku: "ELEC-001",
+    price: 29990,
+    stock: 15,
+    category_id: 1,
+    created_at: "2026-02-01T10:00:00Z",
+    updated_at: "2026-02-01T10:00:00Z",
+  },
+  {  
+    id: 2,
+    name: "Camiseta de Algodón",
+    description: "Camiseta básica de algodón para uso diario",
+    sku: "CLOTH-001",
+    price: 7990,
+    stock: 50,
+    category_id: 2,
+    created_at: "2026-02-01T10:00:00Z",
+    updated_at: "2026-02-01T10:00:00Z",
+  },
+  {
+    id: 3,
+    name: "Lámpara de Mesa",
+    description: "Lámpara de mesa con diseño moderno y luz LED",
+    sku: "HOME-001",
+    price: 15990,
+    stock: 20,
+    category_id: 3,
+    created_at: "2026-02-01T10:00:00Z",
+    updated_at: "2026-02-01T10:00:00Z",
+  },
+]
