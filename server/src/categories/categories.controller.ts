@@ -1,52 +1,55 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { categoriesService } from "./categories.service.js";
 
 export const categoriesController = {
-  getAll(req: Request, res: Response) {
-    const categories = categoriesService.getAll();
-    res.json(categories);
-  },
-
-  getById(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const category = categoriesService.getById(id);
-
-    if (!category) {
-      res.status(404).json({ message: "Categoría no encontrada" });
-      return;
+  getAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const categories = categoriesService.getAll();
+      res.json(categories);
+    } catch (error) {
+      next(error);
     }
-
-    res.json(category);
   },
 
-  create(req: Request, res: Response) {
-    const { name, description } = req.body;
-
-    if (!name) {
-      res.status(400).json({ message: "Se requiere el nombre" });
-      return;
+  getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const category = categoriesService.getById(Number(req.params.id));
+      res.json(category);
+    } catch (error) {
+      next(error);
     }
-
-    const result = categoriesService.create(name, description);
-    res.status(201).json(result);
   },
 
-  update(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const { name, description } = req.body;
-
-    if (!name) {
-      res.status(400).json({ message: "Se requiere el nombre" });
-      return;
+  create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { name, description } = req.body;
+      const result = categoriesService.create(name, description);
+      res.status(201).json(result);
+    } catch (error) {
+      next(error);
     }
-
-    const result = categoriesService.update(id, name, description);
-    res.json(result);
   },
 
-  delete(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    categoriesService.delete(id);
-    res.status(204).send();
+  update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { name, description } = req.body;
+      const result = categoriesService.update(
+        Number(req.params.id),
+        name,
+        description,
+      );
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      categoriesService.delete(Number(req.params.id));
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
   },
 };

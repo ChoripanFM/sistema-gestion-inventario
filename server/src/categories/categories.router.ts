@@ -3,10 +3,20 @@ import { categoriesController } from "./categories.controller.js";
 
 const router = Router();
 
-router.get("/", categoriesController.getAll);
-router.get("/:id", categoriesController.getById);
-router.post("/", categoriesController.create);
-router.put("/:id", categoriesController.update);
-router.delete("/:id", categoriesController.delete);
+router.get("/", (req, res, next) =>
+  categoriesController.getAll(req, res, next),
+);
+router.get("/:id", (req, res, next) =>
+  categoriesController.getById(req, res, next),
+);
+router.post("/", (req, res, next) =>
+  categoriesController.create(req, res, next),
+);
+router.put("/:id", (req, res, next) =>
+  categoriesController.update(req, res, next),
+);
+router.delete("/:id", (req, res, next) =>
+  categoriesController.delete(req, res, next),
+);
 
 export default router;

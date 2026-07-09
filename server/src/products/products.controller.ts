@@ -1,37 +1,32 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { productsService } from "./products.service.js";
 
 export const productsController = {
-  getAll(req: Request, res: Response) {
-    const { search, categoryId } = req.query;
-    const products = productsService.getAll(
-      search as string | undefined,
-      categoryId ? Number(categoryId) : undefined,
-    );
-    res.json(products);
-  },
-
-  getById(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const product = productsService.getById(id);
-
-    if (!product) {
-      res.status(404).json({ message: "Producto no encontrado" });
-      return;
-    }
-
-    res.json(product);
-  },
-
-  create(req: Request, res: Response) {
-    const { name, description, sku, price, stock, category_id } = req.body;
-
-    if (!name || price === undefined || stock === undefined || !category_id) {
-      res.status(400).json({ message: "Faltan campos requeridos" });
-      return;
-    }
-
+  getAll(req: Request, res: Response, next: NextFunction) {
     try {
+      const { search, categoryId } = req.query;
+      const products = productsService.getAll(
+        search as string,
+        categoryId ? Number(categoryId) : undefined,
+      );
+      res.json(products);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const product = productsService.getById(Number(req.params.id));
+      res.json(product);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { name, description, sku, price, stock, category_id } = req.body;
       const result = productsService.create({
         name,
         description,
@@ -41,22 +36,15 @@ export const productsController = {
         category_id,
       });
       res.status(201).json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error) {
+      next(error);
     }
   },
 
-  update(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const { name, description, sku, price, stock, category_id } = req.body;
-
-    if (!name || price === undefined || stock === undefined || !category_id) {
-      res.status(400).json({ message: "Faltan campos requeridos" });
-      return;
-    }
-
+  update(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = productsService.update(id, {
+      const { name, description, sku, price, stock, category_id } = req.body;
+      const result = productsService.update(Number(req.params.id), {
         name,
         description,
         sku,
@@ -65,14 +53,17 @@ export const productsController = {
         category_id,
       });
       res.json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error) {
+      next(error);
     }
   },
 
-  delete(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    productsService.delete(id);
-    res.status(204).send();
+  delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      productsService.delete(Number(req.params.id));
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
   },
 };

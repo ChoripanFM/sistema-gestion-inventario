@@ -1,5 +1,33 @@
 import { productsRepository } from "./products.repository.js";
 import { categoriesRepository } from "../categories/categories.repository.js";
+import { AppError } from "../errors/AppError.js";
+
+function validateProductData(data: {
+  name: string;
+  price: number;
+  stock: number;
+  category_id?: number;
+}) {
+  if (!data.name?.trim()) throw new AppError("El nombre es requerido", 400);
+
+  if (data.price === undefined)
+    throw new AppError("El precio es requerido", 400);
+  if (data.stock === undefined)
+    throw new AppError("El stock es requerido", 400);
+
+  const price = Number(data.price);
+  const stock = Number(data.stock);
+
+  if (isNaN(price)) throw new AppError("El precio debe ser un número", 400);
+  if (isNaN(stock)) throw new AppError("El stock debe ser un número", 400);
+  if (price < 0) throw new AppError("El precio no puede ser negativo", 400);
+  if (stock < 0) throw new AppError("El stock no puede ser negativo", 400);
+
+  if (data.category_id === undefined)
+    throw new AppError("La categoría es requerida", 400);
+
+  return { price, stock };
+}
 
 export const productsService = {
   getAll(search?: string, categoryId?: number) {
@@ -7,7 +35,9 @@ export const productsService = {
   },
 
   getById(id: number) {
-    return productsRepository.findById(id);
+    const product = productsRepository.findById(id);
+    if (!product) throw new AppError("Producto no encontrado", 404);
+    return product;
   },
 
   create(data: {
@@ -18,11 +48,13 @@ export const productsService = {
     stock: number;
     category_id: number;
   }) {
-    const category = categoriesRepository.findById(data.category_id);
-    if (!category) {
-      throw new Error("Categoría no encontrada");
+    const { price, stock } = validateProductData(data);
+
+    if (data.category_id) {
+      const category = categoriesRepository.findById(data.category_id);
+      if (!category) throw new AppError("Categoría no encontrada", 404);
     }
-    return productsRepository.create(data);
+    return productsRepository.create({ ...data, price, stock });
   },
 
   update(
@@ -36,10 +68,22 @@ export const productsService = {
       category_id: number;
     },
   ) {
-    return productsRepository.update(id, data);
+    const { price, stock } = validateProductData(data);
+
+    const product = productsRepository.findById(id);
+    if (!product) throw new AppError("Producto no encontrado", 404);
+
+    if (data.category_id) {
+      const category = categoriesRepository.findById(data.category_id);
+      if (!category) throw new AppError("Categoría no encontrada", 404);
+    }
+
+    return productsRepository.update(id, { ...data, price, stock });
   },
 
   delete(id: number) {
+    const product = productsRepository.findById(id);
+    if (!product) throw new AppError("Producto no encontrado", 404);
     return productsRepository.delete(id);
   },
 };
