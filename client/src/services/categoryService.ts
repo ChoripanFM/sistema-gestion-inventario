@@ -1,7 +1,6 @@
 import type { Category, CategoryInput } from "../types";
 
 const API_URL = "http://localhost:3000/api/categories";
-
 /**
  * Obtiene todas las categorías desde la API.
  */
