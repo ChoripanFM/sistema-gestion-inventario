@@ -1,7 +1,10 @@
+import { Pencil, Trash2 } from "lucide-react";
 import type { Category } from "../types";
 
 interface CategoryTableProps {
   categories: Category[];
+  onEdit: (category: Category) => void;
+  onDelete: (category: Category) => void;
 }
 
 const BADGE_COLORS = [
@@ -10,7 +13,7 @@ const BADGE_COLORS = [
   "bg-amber-500/15 text-amber-600",
 ];
 
-function CategoryTable({ categories }: CategoryTableProps) {
+function CategoryTable({ categories, onEdit, onDelete }: CategoryTableProps) {
   if (categories.length === 0) {
     return (
       <div className="bg-surface rounded-3x1 shadow-sm p-10 text-center text-muted text-sm">
@@ -26,6 +29,7 @@ function CategoryTable({ categories }: CategoryTableProps) {
           <tr className="text-left text-[11px] uppercase tracking-wider text-muted">
             <th className="px-6 py-4 font-medium">Categoría</th>
             <th className="px-6 py-4 font-medium">Descripción</th>
+            <th className="px-6 py-4 font-medium text-right">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +49,24 @@ function CategoryTable({ categories }: CategoryTableProps) {
               </td>
               <td className="px-6 py-4 text-muted">
                 {category.description ?? "—"}
+              </td>
+              <td className="px-6 py-4">
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => onEdit(category)}
+                      className="p-2 rounded-full text-muted hover:bg-accent/10 hover:text-accent cursor-pointer"
+                      aria-label="Editar"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => onDelete(category)}
+                      className="p-2 rounded-full text-muted hover:bg-danger/10 hover:text-danger cursor-pointer"
+                      aria-label="Eliminar"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
               </td>
             </tr>
           ))}

@@ -1,11 +1,19 @@
+import { Pencil, Trash2 } from "lucide-react";
 import type { Category, Product } from "../types";
 
 interface ProductTableProps {
   products: Product[];
   categories: Category[];
+  onEdit: (product: Product) => void;
+  onDelete: (product: Product) => void;
 }
 
-function ProductTable({ products, categories }: ProductTableProps) {
+function ProductTable({ 
+  products, 
+  categories, 
+  onEdit, 
+  onDelete,
+}: ProductTableProps) {
   if (products.length === 0) {
     return (
       <div className="bg-surface rounded-3x1 shadow-sm p-10 text-center text-muted text-sm">
@@ -29,12 +37,12 @@ function ProductTable({ products, categories }: ProductTableProps) {
             <th className="px-6 py-4 font-medium">Categoría</th>
             <th className="px-6 py-4 font-medium text-right">Precio</th>
             <th className="px-6 py-4 font-medium">Stock</th>
+            <th className="px-6 py-4 font-medium text-right">Acciones</th>
         </tr>
       </thead>
       <tbody>
         {products.map((product) => {
           const lowStock = product.stock < 5;
-
           return (
             <tr key={product.id} className="border-t border-line hover:bg-bg/60">
                 <td className="px-6 py-4 font-medium">{product.name}</td>
@@ -62,6 +70,24 @@ function ProductTable({ products, categories }: ProductTableProps) {
                       ? `Stock bajo (${product.stock})` 
                       : `En stock (${product.stock})`}
                   </span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex justify-end gap-2">
+                    <button 
+                      onClick={() => onEdit(product)}
+                      className="p-2 rounded-full text-muted hover:bg-accent/10 hover:text-accent cursor-pointer"
+                      aria-label="Editar"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button 
+                      onClick={() => onDelete(product)}
+                      className="p-2 rounded-full text-muted hover:bg-danger/10 hover:text-danger cursor-pointer"
+                      aria-label="Eliminar"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             );

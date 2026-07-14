@@ -1,16 +1,19 @@
 import type { Category, CategoryInput } from "../types";
 
 const API_URL = "http://localhost:3000/api/categories";
-/**
- * Obtiene todas las categorías desde la API.
- */
+
+async function parseError(response: Response, fallback: string): Promise<never> {
+  try {
+    const body = await response.json();
+    throw new Error(body.message ?? fallback);
+  } catch {
+    throw new Error(fallback);
+  }
+}
+
 export async function getCategories(): Promise<Category[]> {
   const response = await fetch(API_URL);
-
-  if (!response.ok) {
-    throw new Error(`Error al obtener categorías: ${response.status}`);
-  }
-
+  if (!response.ok) return parseError(response, "Error al obtener categorías");
   return response.json();
 }
 
@@ -19,15 +22,9 @@ export async function getCategories(): Promise<Category[]> {
  */
 export async function getCategoryById(id: number): Promise<Category> {
   const response = await fetch(`${API_URL}/${id}`);
-
-  if (!response.ok) {
-    throw new Error(`Error al obtener la categoría ${id}: ${response.status}`);
-  }
-
+  if (!response.ok) return parseError(response, `Error al obtener la categoría ${id}`);
   return response.json();
 }
-
-
 /**
  * Crea una nueva categoría.
  */
@@ -38,10 +35,7 @@ export async function createCategory(data: CategoryInput): Promise<Category> {
     body: JSON.stringify(data),
   });
 
-  if (!response.ok) {
-    throw new Error(`Error al crear la categoría: ${response.status}`);
-  }
-
+  if (!response.ok) return parseError(response, "Error al crear la categoría");
   return response.json();
 }
 
@@ -58,10 +52,7 @@ export async function updateCategory(
     body: JSON.stringify(data),
   });
 
-  if (!response.ok) {
-    throw new Error(`Error al actualizar la categoría ${id}: ${response.status}`);
-  }
-
+  if (!response.ok) return parseError(response, `Error al actualizar la categoría ${id}`);
   return response.json();
 }
 
@@ -69,11 +60,7 @@ export async function updateCategory(
  * Elimina una categoría.
  */
 export async function deleteCategory(id: number): Promise<void> {
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: "DELETE",
-  });
+  const response = await fetch(`${API_URL}/${id}`, { method: "DELETE", });
 
-  if (!response.ok) {
-    throw new Error(`Error al eliminar la categoría ${id}: ${response.status}`);
-  }
+  if (!response.ok) return parseError(response, `Error al eliminar la categoría ${id}`);
 }
