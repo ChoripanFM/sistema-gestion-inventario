@@ -29,12 +29,13 @@ export const productsRepository = {
     price: number;
     stock: number;
     category_id: number;
+    image?: string;
   }) {
     return db
       .prepare(
         `
-      INSERT INTO products (name, description, sku, price, stock, category_id)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO products (name, description, sku, price, stock, category_id, image)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `,
       )
       .run(
@@ -44,6 +45,7 @@ export const productsRepository = {
         data.price,
         data.stock,
         data.category_id,
+        data.image ?? null,
       );
   },
 
@@ -56,13 +58,14 @@ export const productsRepository = {
       price: number;
       stock: number;
       category_id: number;
+      image?: string;
     },
   ) {
     return db
       .prepare(
         `
       UPDATE products
-      SET name = ?, description = ?, sku = ?, price = ?, stock = ?, category_id = ?
+      SET name = ?, description = ?, sku = ?, price = ?, stock = ?, category_id = ?, image = COALESCE(?, image)
       WHERE id = ?
     `,
       )
@@ -73,6 +76,7 @@ export const productsRepository = {
         data.price,
         data.stock,
         data.category_id,
+        data.image ?? null,
         id,
       );
   },

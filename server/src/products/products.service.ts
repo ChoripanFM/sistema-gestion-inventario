@@ -1,11 +1,17 @@
 import { productsRepository } from "./products.repository.js";
 import { categoriesRepository } from "../categories/categories.repository.js";
 import { AppError } from "../errors/AppError.js";
+import { unlink } from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function validateProductData(data: {
   name: string;
-  price: number;
-  stock: number;
+  price: any;
+  stock: any;
   category_id?: number;
 }) {
   if (!data.name?.trim()) throw new AppError("El nombre es requerido", 400);
@@ -47,6 +53,7 @@ export const productsService = {
     price: number;
     stock: number;
     category_id: number;
+    image?: string;
   }) {
     const { price, stock } = validateProductData(data);
 
@@ -66,11 +73,12 @@ export const productsService = {
       price: number;
       stock: number;
       category_id: number;
+      image?: string;
     },
   ) {
     const { price, stock } = validateProductData(data);
 
-    const product = productsRepository.findById(id);
+    const product = productsRepository.findById(id) as any;
     if (!product) throw new AppError("Producto no encontrado", 404);
 
     if (data.category_id) {
@@ -78,12 +86,24 @@ export const productsService = {
       if (!category) throw new AppError("Categoría no encontrada", 404);
     }
 
+    if (data.image && product.image) {
+      // Si se sube una nueva imagen y el producto ya tiene una imagen existente
+      const imagePath = path.join(__dirname, "../../uploads", product.image);
+      unlink(imagePath).catch(() => {});
+    }
+
     return productsRepository.update(id, { ...data, price, stock });
   },
 
   delete(id: number) {
-    const product = productsRepository.findById(id);
+    const product = productsRepository.findById(id) as any;
     if (!product) throw new AppError("Producto no encontrado", 404);
+
+    if (product.image) {
+      const imagePath = path.join(__dirname, "../../uploads", product.image);
+      unlink(imagePath).catch(() => {}); // Ignorar errores al eliminar la imagen
+    }
+
     return productsRepository.delete(id);
   },
 };

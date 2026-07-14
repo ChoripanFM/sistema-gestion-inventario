@@ -27,6 +27,7 @@ export const productsController = {
   create(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, description, sku, price, stock, category_id } = req.body;
+      const image = req.file?.filename;
       const result = productsService.create({
         name,
         description,
@@ -34,6 +35,7 @@ export const productsController = {
         price,
         stock,
         category_id,
+        image,
       });
       res.status(201).json(result);
     } catch (error) {
@@ -44,6 +46,7 @@ export const productsController = {
   update(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, description, sku, price, stock, category_id } = req.body;
+      const image = req.file?.filename;
       const result = productsService.update(Number(req.params.id), {
         name,
         description,
@@ -51,6 +54,7 @@ export const productsController = {
         price,
         stock,
         category_id,
+        image,
       });
       res.json(result);
     } catch (error) {
