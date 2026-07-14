@@ -3,12 +3,14 @@ import type { Category, CategoryInput } from "../types";
 const API_URL = "http://localhost:3000/api/categories";
 
 async function parseError(response: Response, fallback: string): Promise<never> {
+  let message = fallback;
   try {
     const body = await response.json();
-    throw new Error(body.message ?? fallback);
-  } catch {
-    throw new Error(fallback);
-  }
+    if (body?.message) message = body.message;
+  } catch (parseErr) {
+    console.warn("No se pudo interpretar el cuerpo del error como JSON:", parseErr);
+  }  
+  throw new Error(message);
 }
 
 export async function getCategories(): Promise<Category[]> {
@@ -51,7 +53,6 @@ export async function updateCategory(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-
   if (!response.ok) return parseError(response, `Error al actualizar la categoría ${id}`);
   return response.json();
 }
@@ -61,6 +62,5 @@ export async function updateCategory(
  */
 export async function deleteCategory(id: number): Promise<void> {
   const response = await fetch(`${API_URL}/${id}`, { method: "DELETE", });
-
   if (!response.ok) return parseError(response, `Error al eliminar la categoría ${id}`);
 }

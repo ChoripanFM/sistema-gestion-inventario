@@ -4,6 +4,7 @@ import CategoryTable from "../components/CategoryTable";
 import CategoryForm from "../components/CategoryForm";
 import Modal from "../components/Modal";
 import SearchInput from "../components/SearchInput";
+import ErrorBanner from "../components/ErrorBanner";
 import {
   getCategories,
   createCategory,
@@ -126,19 +127,18 @@ function CategoriesPage() {
         />
       </div>
 
-       {actionError && (
-        <div className="bg-danger/10 text-danger rounded-2xl px-5 py-4 text-sm mb-4">
-          {actionError}
-        </div>
+      {actionError && (
+        <ErrorBanner
+          message={actionError}
+          onDismiss={() => setActionError(null)}
+        />
       )}
 
         {loading && <p className="text-muted text-sm">Cargando categorías…</p>}
 
         {fetchError && (
-          <div className="bg-danger/10 text-danger rounded-2xl px-5 py-4 text-sm">
-            No se pudo conectar con la API: {fetchError}
-          </div>
-        )}
+        <ErrorBanner message={`No se pudo conectar con la API: ${fetchError}`} />
+      )}
 
         {!loading && !fetchError && (
           <CategoryTable
