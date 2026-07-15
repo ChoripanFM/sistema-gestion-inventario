@@ -27,7 +27,7 @@ function Modal({ title, onClose, children }: ModalProps) {
             <X size={20} />
           </button>
         </div>
-        {children}
+        <div className="px-6 pb-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

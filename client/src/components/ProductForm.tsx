@@ -34,6 +34,15 @@ function ProductForm({
     initialData?.image ? `${IMAGE_BASE_URL}/${initialData.image}` : null
   );
 
+  function clearFieldError(field: string) {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }
+
   function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
     setImageFile(file);
@@ -75,7 +84,11 @@ function ProductForm({
         <div className="flex items-center gap-3">
           <div className="w-16 h-16 rounded-xl bg-bg border border-line flex items-center justify-center overflow-hidden shrink-0">
             {previewUrl ? (
-              <img src={previewUrl} alt="Vista previa" className="w-full h-full object-cover" />
+              <img 
+              src={previewUrl}
+              alt="Vista previa" 
+              className="w-full h-full object-cover" 
+              />
             ) : (
               <ImagePlus size={20} className="text-muted" />
             )}
@@ -94,7 +107,10 @@ function ProductForm({
         <input
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value)
+            clearFieldError("name");
+          }}
           className="w-full px-3 py-2 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
         />
         {errors.name && <p className="text-danger text-xs mt-1">{errors.name}</p>}
@@ -129,7 +145,10 @@ function ProductForm({
             type="number"
             min="0"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => {
+              setPrice(e.target.value);
+              clearFieldError("price");
+            }}
             className="w-full px-3 py-2 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
           />
           {errors.price && (
@@ -142,7 +161,10 @@ function ProductForm({
             type="number"
             min="0"
             value={stock}
-            onChange={(e) => setStock(e.target.value)}
+            onChange={(e) => {
+              setStock(e.target.value);
+              clearFieldError("stock");
+            }}
             className="w-full px-3 py-2 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
           />
           {errors.stock && <p className="text-danger text-xs mt-1">{errors.stock}</p>}
@@ -153,7 +175,10 @@ function ProductForm({
         <label className="block text-sm font-medium mb-1">Categoría</label>
         <select
           value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
+          onChange={(e) => {
+            setCategoryId(e.target.value);
+            clearFieldError("categoryId");
+          }}
           className="w-full px-3 py-2 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
         >
           <option value="">Selecciona una categoría</option>
