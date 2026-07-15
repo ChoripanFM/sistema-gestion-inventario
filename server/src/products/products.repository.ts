@@ -28,7 +28,7 @@ export const productsRepository = {
     sku?: string;
     price: number;
     stock: number;
-    category_id: number;
+    category_id?: number;
     image?: string;
   }) {
     return db
@@ -57,7 +57,7 @@ export const productsRepository = {
       sku?: string;
       price: number;
       stock: number;
-      category_id: number;
+      category_id?: number;
       image?: string;
     },
   ) {

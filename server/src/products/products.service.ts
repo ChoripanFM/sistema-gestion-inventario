@@ -8,14 +8,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function validateProductData(data: {
-  name: string;
-  price: any;
-  stock: any;
-  category_id?: number;
-}) {
+function validateProductData(data: { name: string; price: any; stock: any }) {
   if (!data.name?.trim()) throw new AppError("El nombre es requerido", 400);
-
   if (data.price === undefined)
     throw new AppError("El precio es requerido", 400);
   if (data.stock === undefined)
@@ -28,9 +22,6 @@ function validateProductData(data: {
   if (isNaN(stock)) throw new AppError("El stock debe ser un número", 400);
   if (price < 0) throw new AppError("El precio no puede ser negativo", 400);
   if (stock < 0) throw new AppError("El stock no puede ser negativo", 400);
-
-  if (data.category_id === undefined)
-    throw new AppError("La categoría es requerida", 400);
 
   return { price, stock };
 }
@@ -52,7 +43,7 @@ export const productsService = {
     sku?: string;
     price: number;
     stock: number;
-    category_id: number;
+    category_id?: number;
     image?: string;
   }) {
     const { price, stock } = validateProductData(data);
@@ -72,7 +63,7 @@ export const productsService = {
       sku?: string;
       price: number;
       stock: number;
-      category_id: number;
+      category_id?: number;
       image?: string;
     },
   ) {

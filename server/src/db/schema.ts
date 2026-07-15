@@ -21,12 +21,12 @@ db.exec(`
     price        REAL NOT NULL DEFAULT 0 CHECK (price >= 0),
     stock        INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
     image        TEXT,
-    category_id  INTEGER NOT NULL,
+    category_id  INTEGER,
     created_at   TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at   TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (category_id)
       REFERENCES categories(id)
-      ON DELETE RESTRICT
+      ON DELETE SET NULL
       ON UPDATE CASCADE
   );
 `);
