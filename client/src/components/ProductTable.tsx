@@ -1,5 +1,6 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { ImageOff, Pencil, Trash2 } from "lucide-react";
 import type { Category, Product } from "../types";
+import { IMAGE_BASE_URL } from "../services/productService";
 
 interface ProductTableProps {
   products: Product[];
@@ -45,6 +46,19 @@ function ProductTable({
           const lowStock = product.stock < 5;
           return (
             <tr key={product.id} className="border-t border-line hover:bg-bg/60">
+                <td className="pl-6 py-3">
+                  <div className="w-10 h-10 rounded-lg bg-bg border border-line flex items-center justify-center overflow-hidden shrink-0">
+                    {product.image ? (
+                      <img
+                        src={`${IMAGE_BASE_URL}/${product.image}`}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <ImageOff size={16} className="text-muted" />
+                    )}
+                  </div>
+                </td>
                 <td className="px-6 py-4 font-medium">{product.name}</td>
                 <td className="px-6 py-4 text-muted">{product.sku ?? "—"}</td>
                 <td className="px-6 py-4 text-muted">

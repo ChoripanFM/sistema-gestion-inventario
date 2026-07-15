@@ -78,14 +78,14 @@ function ProductsPage() {
     setIsModalOpen(true);
   }
 
-  async function handleSubmit(data: ProductInput) {
+  async function handleSubmit(data: ProductInput, imageFile?: File | null) {
     setSubmitting(true);
     setFormError(null);
     try {
       if (editingProduct) {
-        await updateProduct(editingProduct.id, data);
+        await updateProduct(editingProduct.id, data, imageFile);
       } else {
-        await createProduct(data);
+        await createProduct(data, imageFile);
       }
       setIsModalOpen(false);
       refreshData();
