@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import CategoryTable from "../components/CategoryTable";
 import CategoryForm from "../components/CategoryForm";
 import Modal from "../components/Modal";
+import ConfirmDialog from "../components/ConfirmDialog";
 import SearchInput from "../components/SearchInput";
 import ErrorBanner from "../components/ErrorBanner";
 import {
@@ -25,6 +26,9 @@ function CategoriesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  
   useEffect(() => {
     let ignore = false;
 
@@ -86,18 +90,19 @@ function CategoriesPage() {
     }
   }
 
-  async function handleDelete(category: Category) {
-    const confirmed = window.confirm(
-      `¿Eliminar la categoría "${category.name}"? Esta acción no se puede deshacer.`
-    );
-    if (!confirmed) return;
-
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    setDeleting(true);
     setActionError(null);
     try {
-      await deleteCategory(category.id);
+      await deleteCategory(pendingDelete.id);
+      setPendingDelete(null);
       refreshCategories();
     } catch (err) {
       setActionError((err as Error).message);
+      setPendingDelete(null);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -144,7 +149,7 @@ function CategoriesPage() {
           <CategoryTable
             categories={filteredCategories}
             onEdit={openEditModal}
-            onDelete={handleDelete}
+            onDelete={setPendingDelete}
           />
         )}
 
@@ -163,6 +168,15 @@ function CategoriesPage() {
         </Modal>
       )}
 
+      {pendingDelete && (
+        <ConfirmDialog
+          title="Eliminar categoría"
+          message={`¿Eliminar "${pendingDelete.name}"? Los productos que tengan esta categoría quedarán sin categoría asignada.`}
+          confirmLabel={deleting ? "Eliminando..." : "Eliminar"}
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDelete(null)}
+        />
+      )}
     </div>
   );
 
