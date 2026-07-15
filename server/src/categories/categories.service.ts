@@ -1,5 +1,12 @@
 import { categoriesRepository } from "./categories.repository.js";
+import { productsRepository } from "../products/products.repository.js";
+import { unlink } from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 import { AppError } from "../errors/AppError.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const categoriesService = {
   getAll() {
@@ -24,9 +31,24 @@ export const categoriesService = {
     return categoriesRepository.update(id, name, description);
   },
 
-  delete(id: number) {
+  delete(id: number, deleteProducts?: boolean) {
     const category = categoriesRepository.findById(id);
     if (!category) throw new AppError("Categoría no encontrada", 404);
+
+    if (deleteProducts) {
+      const products = productsRepository.findAll(undefined, id) as any[];
+      for (const product of products) {
+        if (product.image) {
+          const imagePath = path.join(
+            __dirname,
+            "../../uploads",
+            product.image,
+          );
+          unlink(imagePath).catch(() => {});
+        }
+      }
+      return categoriesRepository.deleteWithProducts(id);
+    }
     return categoriesRepository.delete(id);
   },
 };

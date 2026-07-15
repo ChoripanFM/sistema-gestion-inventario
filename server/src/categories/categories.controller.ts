@@ -46,7 +46,9 @@ export const categoriesController = {
 
   delete(req: Request, res: Response, next: NextFunction) {
     try {
-      categoriesService.delete(Number(req.params.id));
+      const id = Number(req.params.id);
+      const deleteProducts = req.query.deleteProducts === "true";
+      categoriesService.delete(id, deleteProducts);
       res.status(204).send();
     } catch (error) {
       next(error);

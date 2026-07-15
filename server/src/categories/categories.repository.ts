@@ -24,4 +24,18 @@ export const categoriesRepository = {
   delete(id: number) {
     return db.prepare("DELETE FROM categories WHERE id = ?").run(id);
   },
+
+  deleteWithProducts(id: number) {
+    const deleteProducts = db.prepare(
+      "DELETE FROM products WHERE category_id = ?",
+    );
+    const deleteCategory = db.prepare("DELETE FROM categories WHERE id = ?");
+
+    const transaction = db.transaction(() => {
+      deleteProducts.run(id);
+      deleteCategory.run(id);
+    });
+
+    transaction(); //si algo falla a mitad del proceso, ningún cambio se aplica
+  },
 };
