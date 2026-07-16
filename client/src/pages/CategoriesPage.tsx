@@ -179,7 +179,6 @@ function CategoriesPage() {
 
       {pendingDelete && (
         <ConfirmDialog
-          title="Eliminar categoría"
           message={`¿Eliminar Categoría "${pendingDelete.name}"?`}
           checkboxLabel="Eliminar también los productos de esta categoría"
           confirmLabel={deleting ? "Eliminando..." : "Eliminar"}

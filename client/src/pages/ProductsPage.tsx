@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import ProductTable from "../components/ProductTable";
 import ProductForm from "../components/ProductForm";
 import Modal from "../components/Modal";
@@ -36,59 +37,62 @@ function ProductsPage() {
   const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+
   // Espera 300ms después de que el usuario deja de escribir antes de buscar.
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(timer);
-  }, [search]);
+useEffect(() => {
+  const timer = setTimeout(() => setDebouncedSearch(search), 300);
+  return () => clearTimeout(timer);
+}, [search]);
 
   // Carga inicial de categorías (no cambia con la búsqueda/filtro).
-  useEffect(() => {
-    let ignore = false;
-    getCategories()
-      .then((data) => {
-        if (!ignore) setCategories(data);
-      })
-      .catch((err) => {
-        if (!ignore) setFetchError(err.message);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, []);
+useEffect(() => {
+  let ignore = false;
+  getCategories()
+    .then((data) => {
+      if (!ignore) setCategories(data);
+    })
+    .catch((err) => {
+      if (!ignore) setFetchError(err.message);
+    });
+  return () => {
+    ignore = true;
+  };
+}, []);
 
-  // Carga de productos: se re-ejecuta cada vez que cambia la búsqueda o el filtro.
-  useEffect(() => {
-    let ignore = false;
+// Carga de productos: se re-ejecuta cada vez que cambia la búsqueda o el filtro.
+useEffect(() => {
+  let ignore = false;
 
-    const categoryId =
-      categoryFilter && categoryFilter !== NO_CATEGORY_VALUE
-        ? Number(categoryFilter)
-        : undefined;
+  const categoryId =
+    categoryFilter && categoryFilter !== NO_CATEGORY_VALUE
+      ? Number(categoryFilter)
+      : undefined;
 
-    getProducts({ search: debouncedSearch || undefined, categoryId })
-      .then((data) => {
-        if (!ignore) {
-          // "Sin categoría" se sigue filtrando en el cliente,
-          // ya que no es un category_id real que el backend entienda.
-          const finalData =
-            categoryFilter === NO_CATEGORY_VALUE
-              ? data.filter((p) => p.category_id === null)
-              : data;
-          setProducts(finalData);
-        }
-      })
-      .catch((err) => {
-        if (!ignore) setFetchError(err.message);
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
+  getProducts({ search: debouncedSearch || undefined, categoryId })
+    .then((data) => {
+      if (!ignore) {
+        const finalData =
+          categoryFilter === NO_CATEGORY_VALUE
+            ? data.filter((p) => p.category_id === null)
+            : data;
+        setProducts(finalData);
+        setSelectedIds(new Set());
+      }
+    })
+    .catch((err) => {
+      if (!ignore) setFetchError(err.message);
+    })
+    .finally(() => {
+      if (!ignore) setLoading(false);
+    });
 
-    return () => {
-      ignore = true;
-    };
-  }, [debouncedSearch, categoryFilter]);
+  return () => {
+    ignore = true;
+  };
+}, [debouncedSearch, categoryFilter]);
 
   function refreshData() {
     setLoading(true);
@@ -159,6 +163,40 @@ function ProductsPage() {
     }
   }
 
+  function toggleSelect(id: number) {
+  setSelectedIds((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    return next;
+  });
+}
+
+function toggleSelectAll(checked: boolean) {
+  setSelectedIds(checked ? new Set(products.map((p) => p.id)) : new Set());
+}
+
+async function confirmBulkDelete() {
+  setBulkDeleting(true);
+  setActionError(null);
+
+  const results = await Promise.allSettled(
+    Array.from(selectedIds).map((id) => deleteProduct(id))
+  );
+  const failed = results.filter((r) => r.status === "rejected").length;
+
+  if (failed > 0) {
+    setActionError(
+      `No se pudieron eliminar ${failed} de ${selectedIds.size} productos.`
+    );
+  }
+
+  setSelectedIds(new Set());
+  setBulkDeleteOpen(false);
+  setBulkDeleting(false);
+  refreshData();
+}
+
   return (
     <div>
       <header className="mb-6 flex items-center justify-between">
@@ -219,6 +257,22 @@ function ProductsPage() {
         />
       )}
 
+      {selectedIds.size > 0 && (
+        <div className="flex items-center justify-between bg-accent/10 rounded-2xl px-5 py-3 mb-4">
+          <span className="text-sm font-medium text-accent">
+            {selectedIds.size} producto{selectedIds.size !== 1 ? "s" : ""} seleccionado
+            {selectedIds.size !== 1 ? "s" : ""}
+          </span>
+          <button
+            onClick={() => setBulkDeleteOpen(true)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-danger text-white text-xs font-medium hover:opacity-90 cursor-pointer"
+          >
+            <Trash2 size={14} />
+            Eliminar seleccionados
+          </button>
+        </div>
+      )}
+
       {loading && <p className="text-muted text-sm">Cargando productos…</p>}
 
       {fetchError && (
@@ -231,6 +285,9 @@ function ProductsPage() {
           categories={categories}
           onEdit={openEditModal}
           onDelete={setPendingDelete}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onToggleSelectAll={toggleSelectAll}
         />
       )}
 
@@ -252,11 +309,21 @@ function ProductsPage() {
 
       {pendingDelete && (
         <ConfirmDialog
-          title="Eliminar producto"
           message={`¿Eliminar el producto "${pendingDelete.name}"? Esta acción no se puede deshacer.`}
           confirmLabel={deleting ? "Eliminando..." : "Eliminar"}
           onConfirm={confirmDelete}
           onCancel={() => setPendingDelete(null)}
+        />
+      )}
+
+      {bulkDeleteOpen && (
+        <ConfirmDialog
+          message={`¿Eliminar ${selectedIds.size} producto${
+            selectedIds.size !== 1 ? "s" : ""
+          }? Esta acción no se puede deshacer.`}
+          confirmLabel={bulkDeleting ? "Eliminando..." : "Eliminar"}
+          onConfirm={confirmBulkDelete}
+          onCancel={() => setBulkDeleteOpen(false)}
         />
       )}
     </div>

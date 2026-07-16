@@ -22,7 +22,7 @@ export interface Product {
   price: number;
   stock: number;
   image: string | null;
-  category_id: number;
+  category_id: number | null;
   created_at: string;
   updated_at: string;
 }
