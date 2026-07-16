@@ -17,7 +17,7 @@ function ProductTable({
 }: ProductTableProps) {
   if (products.length === 0) {
     return (
-      <div className="bg-surface rounded-3x1 shadow-sm p-10 text-center text-muted text-sm">
+      <div className="bg-surface rounded-3xl shadow-sm p-10 text-center text-muted text-sm">
         No hay productos registrados todavía.
       </div>
     );
@@ -33,19 +33,21 @@ function ProductTable({
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left text-[11px] uppercase tracking-wider text-muted">
+            {/* SOLUCIÓN: Añadimos este th vacío para alinear el espacio de la imagen */}
+            <th className="pl-6 py-4 w-16"></th> 
             <th className="px-6 py-4 font-medium">Producto</th>
             <th className="px-6 py-4 font-medium">SKU</th>
             <th className="px-6 py-4 font-medium">Categoría</th>
             <th className="px-6 py-4 font-medium text-right">Precio</th>
             <th className="px-6 py-4 font-medium">Stock</th>
             <th className="px-6 py-4 font-medium text-right">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {products.map((product) => {
-          const lowStock = product.stock < 5;
-          return (
-            <tr key={product.id} className="border-t border-line hover:bg-bg/60">
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => {
+            const lowStock = product.stock < 5;
+            return (
+              <tr key={product.id} className="border-t border-line hover:bg-bg/60">
                 <td className="pl-6 py-3">
                   <div className="w-10 h-10 rounded-lg bg-bg border border-line flex items-center justify-center overflow-hidden shrink-0">
                     {product.image ? (

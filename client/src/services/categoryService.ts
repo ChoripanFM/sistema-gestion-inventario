@@ -60,7 +60,13 @@ export async function updateCategory(
 /**
  * Elimina una categoría.
  */
-export async function deleteCategory(id: number): Promise<void> {
-  const response = await fetch(`${API_URL}/${id}`, { method: "DELETE", });
+export async function deleteCategory(
+  id: number,
+  deleteProducts?: boolean
+): Promise<void> {
+  const query = deleteProducts ? "?deleteProducts=true" : "";
+  const response = await fetch(`${API_URL}/${id}${query}`, {
+    method: "DELETE", 
+  });
   if (!response.ok) return parseError(response, `Error al eliminar la categoría ${id}`);
 }

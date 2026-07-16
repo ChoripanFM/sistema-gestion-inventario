@@ -25,7 +25,8 @@ function ProductsPage() {
   const [actionError, setActionError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState(""); // "" = todas, "none" = sin categoría, o el id
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -35,14 +36,46 @@ function ProductsPage() {
   const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Espera 300ms después de que el usuario deja de escribir antes de buscar.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Carga inicial de categorías (no cambia con la búsqueda/filtro).
+  useEffect(() => {
+    let ignore = false;
+    getCategories()
+      .then((data) => {
+        if (!ignore) setCategories(data);
+      })
+      .catch((err) => {
+        if (!ignore) setFetchError(err.message);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  // Carga de productos: se re-ejecuta cada vez que cambia la búsqueda o el filtro.
   useEffect(() => {
     let ignore = false;
 
-    Promise.all([getProducts(), getCategories()])
-      .then(([productsData, categoriesData]) => {
+    const categoryId =
+      categoryFilter && categoryFilter !== NO_CATEGORY_VALUE
+        ? Number(categoryFilter)
+        : undefined;
+
+    getProducts({ search: debouncedSearch || undefined, categoryId })
+      .then((data) => {
         if (!ignore) {
-          setProducts(productsData);
-          setCategories(categoriesData);
+          // "Sin categoría" se sigue filtrando en el cliente,
+          // ya que no es un category_id real que el backend entienda.
+          const finalData =
+            categoryFilter === NO_CATEGORY_VALUE
+              ? data.filter((p) => p.category_id === null)
+              : data;
+          setProducts(finalData);
         }
       })
       .catch((err) => {
@@ -55,33 +88,30 @@ function ProductsPage() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [debouncedSearch, categoryFilter]);
 
   function refreshData() {
     setLoading(true);
-    Promise.all([getProducts(), getCategories()])
+    const categoryId =
+      categoryFilter && categoryFilter !== NO_CATEGORY_VALUE
+        ? Number(categoryFilter)
+        : undefined;
+
+    Promise.all([
+      getProducts({ search: debouncedSearch || undefined, categoryId }),
+      getCategories(),
+    ])
       .then(([productsData, categoriesData]) => {
-        setProducts(productsData);
+        const finalData =
+          categoryFilter === NO_CATEGORY_VALUE
+            ? productsData.filter((p) => p.category_id === null)
+            : productsData;
+        setProducts(finalData);
         setCategories(categoriesData);
       })
       .catch((err) => setFetchError(err.message))
       .finally(() => setLoading(false));
   }
-
-  const filteredProducts = products.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      (p.sku ?? "").toLowerCase().includes(search.toLowerCase());
-
-    const matchesCategory =
-      categoryFilter === ""
-        ? true
-        : categoryFilter === NO_CATEGORY_VALUE
-        ? p.category_id === null
-        : p.category_id === Number(categoryFilter);
-
-    return matchesSearch && matchesCategory;
-  });
 
   function openCreateModal() {
     setEditingProduct(null);
@@ -151,13 +181,19 @@ function ProductsPage() {
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <SearchInput
           value={search}
-          onChange={setSearch}
-          placeholder="Buscar por nombre o SKU..."
+          onChange={(value) => {
+            setSearch(value);
+            setLoading(true); // Muestra el estado de carga mientras se filtra la búsqueda
+          }}
+          placeholder="Buscar por nombre..."
         />
 
         <select
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={(e) => {
+            setCategoryFilter(e.target.value);
+            setLoading(true); // Muestra el estado de carga mientras se filtra por categoría  
+          }}
           className="px-4 py-2 rounded-full border border-line bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 cursor-pointer"
         >
           <option value="">Todas las categorías</option>
@@ -191,7 +227,7 @@ function ProductsPage() {
 
       {!loading && !fetchError && (
         <ProductTable
-          products={filteredProducts}
+          products={products}
           categories={categories}
           onEdit={openEditModal}
           onDelete={setPendingDelete}

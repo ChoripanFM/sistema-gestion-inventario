@@ -12,10 +12,12 @@ import {
   updateCategory,
   deleteCategory,
 } from "../services/categoryService";
-import type { Category, CategoryInput } from "../types";
+import { getProducts } from "../services/productService";
+import type { Category, CategoryInput, Product } from "../types";
 
 function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -32,9 +34,12 @@ function CategoriesPage() {
   useEffect(() => {
     let ignore = false;
 
-    getCategories()
-      .then((data) => {
-        if (!ignore) setCategories(data);
+    Promise.all([getCategories(), getProducts()])
+      .then(([categoriesData, productsData]) => {
+        if (!ignore) {
+          setCategories(categoriesData);
+          setProducts(productsData);
+        }
       })
       .catch((err) => {
         if (!ignore) setFetchError(err.message);
@@ -48,10 +53,13 @@ function CategoriesPage() {
     };
   }, []);
 
-    function refreshCategories() {
+  function refreshCategories() {
     setLoading(true);
-    getCategories()
-      .then(setCategories)
+    Promise.all([getCategories(), getProducts()])
+      .then(([categoriesData, productsData]) => {
+        setCategories(categoriesData);
+        setProducts(productsData);
+      })
       .catch((err) => setFetchError(err.message))
       .finally(() => setLoading(false));
   }
@@ -90,12 +98,12 @@ function CategoriesPage() {
     }
   }
 
-  async function confirmDelete() {
+  async function confirmDelete(deleteProducts: boolean) {
     if (!pendingDelete) return;
     setDeleting(true);
     setActionError(null);
     try {
-      await deleteCategory(pendingDelete.id);
+      await deleteCategory(pendingDelete.id, deleteProducts);
       setPendingDelete(null);
       refreshCategories();
     } catch (err) {
@@ -148,6 +156,7 @@ function CategoriesPage() {
         {!loading && !fetchError && (
           <CategoryTable
             categories={filteredCategories}
+            products={products}
             onEdit={openEditModal}
             onDelete={setPendingDelete}
           />
@@ -171,7 +180,8 @@ function CategoriesPage() {
       {pendingDelete && (
         <ConfirmDialog
           title="Eliminar categoría"
-          message={`¿Eliminar "${pendingDelete.name}"? Los productos que tengan esta categoría quedarán sin categoría asignada.`}
+          message={`¿Eliminar Categoría "${pendingDelete.name}"?`}
+          checkboxLabel="Eliminar también los productos de esta categoría"
           confirmLabel={deleting ? "Eliminando..." : "Eliminar"}
           onConfirm={confirmDelete}
           onCancel={() => setPendingDelete(null)}
@@ -179,7 +189,6 @@ function CategoriesPage() {
       )}
     </div>
   );
-
 }
 
 export default CategoriesPage;
