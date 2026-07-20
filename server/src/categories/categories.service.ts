@@ -21,6 +21,14 @@ export const categoriesService = {
 
   create(name: string, description?: string) {
     if (!name?.trim()) throw new AppError("El nombre es requerido", 400);
+
+    // Validar que no exista una categoría con el mismo nombre. La búsqueda se hace directamente en la BD.
+    const existingCategory = categoriesRepository.findByName(name.trim());
+
+    if (existingCategory) {
+      throw new AppError("Ya existe una categoría con este nombre.", 409);
+    }
+
     return categoriesRepository.create(name, description);
   },
 
@@ -28,6 +36,16 @@ export const categoriesService = {
     if (!name?.trim()) throw new AppError("El nombre es requerido", 400);
     const category = categoriesRepository.findById(id);
     if (!category) throw new AppError("Categoría no encontrada", 404);
+
+    const existingCategory = categoriesRepository.findByNameExcludingId(
+      name.trim(),
+      id,
+    );
+
+    if (existingCategory) {
+      throw new AppError("Ya existe una categoría con este nombre.", 409);
+    }
+
     return categoriesRepository.update(id, name, description);
   },
 

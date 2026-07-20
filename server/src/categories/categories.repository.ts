@@ -9,6 +9,21 @@ export const categoriesRepository = {
     return db.prepare("SELECT * FROM categories WHERE id = ?").get(id);
   },
 
+  findByName(name: string) {
+    return db
+      .prepare("SELECT * FROM categories WHERE LOWER(name) = LOWER(?)")
+      .get(name);
+  },
+
+  //Busca una categoría con el mismo nombre, pero ignorando la actual.
+  findByNameExcludingId(name: string, excludeId: number) {
+    return db
+      .prepare(
+        "SELECT * FROM categories WHERE LOWER(name) = LOWER(?) AND id != ?",
+      )
+      .get(name, excludeId);
+  },
+
   create(name: string, description?: string) {
     return db
       .prepare("INSERT INTO categories (name, description) VALUES (?, ?)")
