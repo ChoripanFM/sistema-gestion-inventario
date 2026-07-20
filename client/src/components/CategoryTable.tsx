@@ -14,15 +14,15 @@ const BADGE_COLORS = [
   "bg-amber-500/15 text-amber-600",
 ];
 
-function CategoryTable({ 
+function CategoryTable({
   categories,
-  products, 
-  onEdit, 
-  onDelete, 
+  products,
+  onEdit,
+  onDelete,
 }: CategoryTableProps) {
   if (categories.length === 0) {
     return (
-      <div className="bg-surface rounded-3x1 shadow-sm p-10 text-center text-muted text-sm">
+      <div className="bg-surface rounded-3xl shadow-sm p-10 text-center text-muted text-sm">
         No hay categorías registradas todavía.
       </div>
     );
@@ -45,7 +45,10 @@ function CategoryTable({
         </thead>
         <tbody>
           {categories.map((category, index) => (
-            <tr key={category.id} className="border-t border-line hover:bg-bg/60">
+            <tr
+              key={category.id}
+              className="border-t border-line hover:bg-bg/60"
+            >
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
                   <span
