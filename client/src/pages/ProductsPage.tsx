@@ -42,57 +42,57 @@ function ProductsPage() {
   const [bulkDeleting, setBulkDeleting] = useState(false);
 
   // Espera 300ms después de que el usuario deja de escribir antes de buscar.
-useEffect(() => {
-  const timer = setTimeout(() => setDebouncedSearch(search), 300);
-  return () => clearTimeout(timer);
-}, [search]);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   // Carga inicial de categorías (no cambia con la búsqueda/filtro).
-useEffect(() => {
-  let ignore = false;
-  getCategories()
-    .then((data) => {
-      if (!ignore) setCategories(data);
-    })
-    .catch((err) => {
-      if (!ignore) setFetchError(err.message);
-    });
-  return () => {
-    ignore = true;
-  };
-}, []);
+  useEffect(() => {
+    let ignore = false;
+    getCategories()
+      .then((data) => {
+        if (!ignore) setCategories(data);
+      })
+      .catch((err) => {
+        if (!ignore) setFetchError(err.message);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
-// Carga de productos: se re-ejecuta cada vez que cambia la búsqueda o el filtro.
-useEffect(() => {
-  let ignore = false;
+  // Carga de productos: se re-ejecuta cada vez que cambia la búsqueda o el filtro.
+  useEffect(() => {
+    let ignore = false;
 
-  const categoryId =
-    categoryFilter && categoryFilter !== NO_CATEGORY_VALUE
-      ? Number(categoryFilter)
-      : undefined;
+    const categoryId =
+      categoryFilter && categoryFilter !== NO_CATEGORY_VALUE
+        ? Number(categoryFilter)
+        : undefined;
 
-  getProducts({ search: debouncedSearch || undefined, categoryId })
-    .then((data) => {
-      if (!ignore) {
-        const finalData =
-          categoryFilter === NO_CATEGORY_VALUE
-            ? data.filter((p) => p.category_id === null)
-            : data;
-        setProducts(finalData);
-        setSelectedIds(new Set());
-      }
-    })
-    .catch((err) => {
-      if (!ignore) setFetchError(err.message);
-    })
-    .finally(() => {
-      if (!ignore) setLoading(false);
-    });
+    getProducts({ search: debouncedSearch || undefined, categoryId })
+      .then((data) => {
+        if (!ignore) {
+          const finalData =
+            categoryFilter === NO_CATEGORY_VALUE
+              ? data.filter((p) => p.category_id === null)
+              : data;
+          setProducts(finalData);
+          setSelectedIds(new Set());
+        }
+      })
+      .catch((err) => {
+        if (!ignore) setFetchError(err.message);
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
 
-  return () => {
-    ignore = true;
-  };
-}, [debouncedSearch, categoryFilter]);
+    return () => {
+      ignore = true;
+    };
+  }, [debouncedSearch, categoryFilter]);
 
   function refreshData() {
     setLoading(true);
@@ -164,38 +164,38 @@ useEffect(() => {
   }
 
   function toggleSelect(id: number) {
-  setSelectedIds((prev) => {
-    const next = new Set(prev);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    return next;
-  });
-}
-
-function toggleSelectAll(checked: boolean) {
-  setSelectedIds(checked ? new Set(products.map((p) => p.id)) : new Set());
-}
-
-async function confirmBulkDelete() {
-  setBulkDeleting(true);
-  setActionError(null);
-
-  const results = await Promise.allSettled(
-    Array.from(selectedIds).map((id) => deleteProduct(id))
-  );
-  const failed = results.filter((r) => r.status === "rejected").length;
-
-  if (failed > 0) {
-    setActionError(
-      `No se pudieron eliminar ${failed} de ${selectedIds.size} productos.`
-    );
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }
 
-  setSelectedIds(new Set());
-  setBulkDeleteOpen(false);
-  setBulkDeleting(false);
-  refreshData();
-}
+  function toggleSelectAll(checked: boolean) {
+    setSelectedIds(checked ? new Set(products.map((p) => p.id)) : new Set());
+  }
+
+  async function confirmBulkDelete() {
+    setBulkDeleting(true);
+    setActionError(null);
+
+    const results = await Promise.allSettled(
+      Array.from(selectedIds).map((id) => deleteProduct(id)),
+    );
+    const failed = results.filter((r) => r.status === "rejected").length;
+
+    if (failed > 0) {
+      setActionError(
+        `No se pudieron eliminar ${failed} de ${selectedIds.size} productos.`,
+      );
+    }
+
+    setSelectedIds(new Set());
+    setBulkDeleteOpen(false);
+    setBulkDeleting(false);
+    refreshData();
+  }
 
   return (
     <div>
@@ -208,7 +208,6 @@ async function confirmBulkDelete() {
         </div>
         <button
           onClick={openCreateModal}
-          disabled={categories.length === 0}
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 cursor-pointer"
         >
           <Plus size={16} />
@@ -230,7 +229,7 @@ async function confirmBulkDelete() {
           value={categoryFilter}
           onChange={(e) => {
             setCategoryFilter(e.target.value);
-            setLoading(true); // Muestra el estado de carga mientras se filtra por categoría  
+            setLoading(true); // Muestra el estado de carga mientras se filtra por categoría
           }}
           className="px-4 py-2 rounded-full border border-line bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 cursor-pointer"
         >
@@ -244,12 +243,6 @@ async function confirmBulkDelete() {
         </select>
       </div>
 
-      {categories.length === 0 && !loading && !fetchError && (
-        <div className="bg-amber-500/10 text-amber-600 rounded-2xl px-5 py-4 text-sm mb-4">
-          Necesitas crear al menos una categoría antes de poder agregar productos.
-        </div>
-      )}
-
       {actionError && (
         <ErrorBanner
           message={actionError}
@@ -260,7 +253,8 @@ async function confirmBulkDelete() {
       {selectedIds.size > 0 && (
         <div className="flex items-center justify-between bg-accent/10 rounded-2xl px-5 py-3 mb-4">
           <span className="text-sm font-medium text-accent">
-            {selectedIds.size} producto{selectedIds.size !== 1 ? "s" : ""} seleccionado
+            {selectedIds.size} producto{selectedIds.size !== 1 ? "s" : ""}{" "}
+            seleccionado
             {selectedIds.size !== 1 ? "s" : ""}
           </span>
           <button
@@ -276,7 +270,9 @@ async function confirmBulkDelete() {
       {loading && <p className="text-muted text-sm">Cargando productos…</p>}
 
       {fetchError && (
-        <ErrorBanner message={`No se pudo conectar con la API: ${fetchError}`} />
+        <ErrorBanner
+          message={`No se pudo conectar con la API: ${fetchError}`}
+        />
       )}
 
       {!loading && !fetchError && (

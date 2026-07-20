@@ -44,7 +44,7 @@ export const productsRepository = {
         data.sku ?? null,
         data.price,
         data.stock,
-        data.category_id,
+        data.category_id || null,
         data.image ?? null,
       );
   },
@@ -75,7 +75,7 @@ export const productsRepository = {
         data.sku ?? null,
         data.price,
         data.stock,
-        data.category_id,
+        data.category_id || null,
         data.image ?? null,
         id,
       );

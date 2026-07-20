@@ -45,5 +45,5 @@ export interface ProductInput {
   sku?: string;
   price: number;
   stock: number;
-  category_id: number;
+  category_id?: number;
 }

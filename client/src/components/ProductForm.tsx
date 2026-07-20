@@ -20,18 +20,20 @@ function ProductForm({
   serverError,
 }: ProductFormProps) {
   const [name, setName] = useState(initialData?.name ?? "");
-  const [description, setDescription] = useState(initialData?.description ?? "");
+  const [description, setDescription] = useState(
+    initialData?.description ?? "",
+  );
   const [sku, setSku] = useState(initialData?.sku ?? "");
   const [price, setPrice] = useState(initialData?.price?.toString() ?? "");
   const [stock, setStock] = useState(initialData?.stock?.toString() ?? "");
   const [categoryId, setCategoryId] = useState(
-    initialData?.category_id?.toString() ?? ""
+    initialData?.category_id?.toString() ?? "",
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    initialData?.image ? `${IMAGE_BASE_URL}/${initialData.image}` : null
+    initialData?.image ? `${IMAGE_BASE_URL}/${initialData.image}` : null,
   );
 
   function clearFieldError(field: string) {
@@ -56,7 +58,6 @@ function ProductForm({
       newErrors.price = "Ingresa un precio válido";
     if (stock === "" || Number(stock) < 0)
       newErrors.stock = "Ingresa un stock válido";
-    if (categoryId === "") newErrors.categoryId = "Selecciona una categoría";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }
@@ -65,29 +66,32 @@ function ProductForm({
     e.preventDefault();
     if (!validate()) return;
 
-    onSubmit({
-      name: name.trim(),
-      description: description.trim() || undefined,
-      sku: sku.trim() || undefined,
-      price: Number(price),
-      stock: Number(stock),
-      category_id: Number(categoryId),
-    },
-    imageFile
+    onSubmit(
+      {
+        name: name.trim(),
+        description: description.trim() || undefined,
+        sku: sku.trim() || undefined,
+        price: Number(price),
+        stock: Number(stock),
+        category_id: categoryId ? Number(categoryId) : undefined,
+      },
+      imageFile,
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Imagen (opcional)</label>
+        <label className="block text-sm font-medium mb-1">
+          Imagen (opcional)
+        </label>
         <div className="flex items-center gap-3">
           <div className="w-16 h-16 rounded-xl bg-bg border border-line flex items-center justify-center overflow-hidden shrink-0">
             {previewUrl ? (
-              <img 
-              src={previewUrl}
-              alt="Vista previa" 
-              className="w-full h-full object-cover" 
+              <img
+                src={previewUrl}
+                alt="Vista previa"
+                className="w-full h-full object-cover"
               />
             ) : (
               <ImagePlus size={20} className="text-muted" />
@@ -108,12 +112,14 @@ function ProductForm({
           type="text"
           value={name}
           onChange={(e) => {
-            setName(e.target.value)
+            setName(e.target.value);
             clearFieldError("name");
           }}
           className="w-full px-3 py-2 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
         />
-        {errors.name && <p className="text-danger text-xs mt-1">{errors.name}</p>}
+        {errors.name && (
+          <p className="text-danger text-xs mt-1">{errors.name}</p>
+        )}
       </div>
 
       <div>
@@ -167,7 +173,9 @@ function ProductForm({
             }}
             className="w-full px-3 py-2 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
           />
-          {errors.stock && <p className="text-danger text-xs mt-1">{errors.stock}</p>}
+          {errors.stock && (
+            <p className="text-danger text-xs mt-1">{errors.stock}</p>
+          )}
         </div>
       </div>
 
@@ -188,9 +196,6 @@ function ProductForm({
             </option>
           ))}
         </select>
-        {errors.categoryId && (
-          <p className="text-danger text-xs mt-1">{errors.categoryId}</p>
-        )}
       </div>
 
       {serverError && (
