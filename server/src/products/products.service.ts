@@ -52,6 +52,13 @@ export const productsService = {
       const category = categoriesRepository.findById(data.category_id);
       if (!category) throw new AppError("Categoría no encontrada", 404);
     }
+
+    if (data.sku) {
+      const existingSKU = productsRepository.findBySku(data.sku);
+      if (existingSKU)
+        throw new AppError("Ya existe un producto con este SKU", 409);
+    }
+
     return productsRepository.create({ ...data, price, stock });
   },
 
@@ -77,8 +84,14 @@ export const productsService = {
       if (!category) throw new AppError("Categoría no encontrada", 404);
     }
 
+    if (data.sku) {
+      const existingSKU = productsRepository.findBySkuExcludingId(data.sku, id);
+      if (existingSKU)
+        throw new AppError("Ya existe un producto con ese SKU", 409);
+    }
+
+    // Si se sube una nueva imagen y el producto ya tiene una imagen existente, se elimina la anterior.
     if (data.image && product.image) {
-      // Si se sube una nueva imagen y el producto ya tiene una imagen existente
       const imagePath = path.join(__dirname, "../../uploads", product.image);
       unlink(imagePath).catch(() => {});
     }
