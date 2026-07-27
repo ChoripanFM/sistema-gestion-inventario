@@ -6,8 +6,8 @@ export const productsRepository = {
     const params: (string | number)[] = [];
 
     if (search) {
-      query += " AND name LIKE ?";
-      params.push(`%${search}%`);
+      query += " AND name LIKE ? OR sku LIKE ?";
+      params.push(`%${search}%`, `%${search}%`);
     }
 
     if (categoryId) {
