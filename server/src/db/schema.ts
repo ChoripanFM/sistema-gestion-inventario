@@ -22,8 +22,8 @@ db.exec(`
     stock        INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
     image        TEXT,
     category_id  INTEGER,
-    created_at   TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    created_at   TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+    updated_at   TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
     FOREIGN KEY (category_id)
       REFERENCES categories(id)
       ON DELETE SET NULL
