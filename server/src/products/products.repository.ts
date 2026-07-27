@@ -6,8 +6,8 @@ export const productsRepository = {
     const params: (string | number)[] = [];
 
     if (search) {
-      query += " AND name LIKE ?";
-      params.push(`%${search}%`);
+      query += " AND name LIKE ? OR sku LIKE ?";
+      params.push(`%${search}%`, `%${search}%`);
     }
 
     if (categoryId) {
@@ -20,6 +20,16 @@ export const productsRepository = {
 
   findById(id: number) {
     return db.prepare("SELECT * FROM products WHERE id = ?").get(id);
+  },
+
+  findBySku(sku: string) {
+    return db.prepare("SELECT * FROM products WHERE sku = ?").get(sku);
+  },
+  //Busca un sku con los mismos caracteres, pero ignorando el actual.
+  findBySkuExcludingId(sku: string, excludeId: number) {
+    return db
+      .prepare("SELECT * FROM products WHERE sku = ? AND id != ?")
+      .get(sku, excludeId);
   },
 
   create(data: {
