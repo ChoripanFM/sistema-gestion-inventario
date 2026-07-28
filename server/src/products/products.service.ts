@@ -53,6 +53,7 @@ export const productsService = {
       if (!category) throw new AppError("Categoría no encontrada", 404);
     }
 
+    // Se valida antes del INSERT para devolver un mensaje de negocio.
     if (data.sku) {
       const existingSKU = productsRepository.findBySku(data.sku);
       if (existingSKU)
@@ -90,10 +91,9 @@ export const productsService = {
         throw new AppError("Ya existe un producto con ese SKU", 409);
     }
 
-    // Si se sube una nueva imagen y el producto ya tiene una imagen existente, se elimina la anterior.
     if (data.image && product.image) {
       const imagePath = path.join(__dirname, "../../uploads", product.image);
-      unlink(imagePath).catch(() => {});
+      unlink(imagePath).catch(() => {}); // Si el archivo ya no existe, se ignora el error para no bloquear la operación
     }
 
     return productsRepository.update(id, { ...data, price, stock });
@@ -105,7 +105,7 @@ export const productsService = {
 
     if (product.image) {
       const imagePath = path.join(__dirname, "../../uploads", product.image);
-      unlink(imagePath).catch(() => {}); // Ignorar errores al eliminar la imagen
+      unlink(imagePath).catch(() => {});
     }
 
     return productsRepository.delete(id);

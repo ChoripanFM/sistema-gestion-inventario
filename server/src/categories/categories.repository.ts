@@ -15,7 +15,7 @@ export const categoriesRepository = {
       .get(name);
   },
 
-  //Busca una categoría con el mismo nombre, pero ignorando la actual.
+  // Busca una categoría con el mismo nombre, pero ignorando la actual.
   findByNameExcludingId(name: string, excludeId: number) {
     return db
       .prepare(
@@ -46,11 +46,12 @@ export const categoriesRepository = {
     );
     const deleteCategory = db.prepare("DELETE FROM categories WHERE id = ?");
 
+    // Si algo falla a mitad del proceso, ningún cambio se aplica
     const transaction = db.transaction(() => {
       deleteProducts.run(id);
       deleteCategory.run(id);
     });
 
-    transaction(); //si algo falla a mitad del proceso, ningún cambio se aplica
+    transaction();
   },
 };

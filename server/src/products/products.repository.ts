@@ -25,7 +25,7 @@ export const productsRepository = {
   findBySku(sku: string) {
     return db.prepare("SELECT * FROM products WHERE sku = ?").get(sku);
   },
-  //Busca un sku con los mismos caracteres, pero ignorando el actual.
+  // Busca un sku con los mismos caracteres, pero ignorando el actual
   findBySkuExcludingId(sku: string, excludeId: number) {
     return db
       .prepare("SELECT * FROM products WHERE sku = ? AND id != ?")
@@ -75,7 +75,7 @@ export const productsRepository = {
       .prepare(
         `
       UPDATE products
-      SET name = ?, description = ?, sku = ?, price = ?, stock = ?, category_id = ?, image = COALESCE(?, image)
+      SET name = ?, description = ?, sku = ?, price = ?, stock = ?, category_id = ?, image = COALESCE(?, image) 
       WHERE id = ?
     `,
       )
