@@ -1,13 +1,42 @@
+# Dependencias
 node_modules/
 
+# Base de datos
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
 
+# Build
 dist/
+dist-ssr
 
+# Variables de entorno
 .env
 
+# Imágenes subidas
 server/uploads/*
 !server/uploads/.gitkeep
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Archivos locales
+*.local
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
