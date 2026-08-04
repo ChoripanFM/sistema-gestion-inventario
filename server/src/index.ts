@@ -5,6 +5,7 @@ import path from "path";
 import "./db/init.js";
 import categoriesRouter from "./categories/categories.router.js";
 import productsRouter from "./products/products.router.js";
+import salesRouter from "./sales/sales.router.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +25,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api/categories", categoriesRouter);
 app.use("/api/products", productsRouter);
+app.use("/api/sales", salesRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });
