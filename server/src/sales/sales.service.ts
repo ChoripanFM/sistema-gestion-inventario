@@ -10,10 +10,19 @@ export const salesService = {
   process(items: SaleItem[]) {
     if (!items?.length) throw new AppError("El carrito está vacío", 400);
 
-    // Valida que todos los productos existen y tienen stock suficiente
+    const productIds = items.map((item) => item.product_id);
+    const uniqueIds = new Set(productIds);
+    if (uniqueIds.size !== productIds.length) {
+      throw new AppError("El carrito tiene productos duplicados", 400);
+    }
+
     for (const item of items) {
-      if (item.quantity <= 0) {
-        throw new AppError("La cantidad debe ser mayor a cero", 400);
+      const quantity = Number(item.quantity);
+      if (isNaN(quantity) || !Number.isInteger(quantity) || quantity <= 0) {
+        throw new AppError(
+          "La cantidad debe ser un número entero positivo",
+          400,
+        );
       }
 
       const product = salesRepository.findProductById(item.product_id) as any;
@@ -32,7 +41,6 @@ export const salesService = {
       }
     }
 
-    // Descontar stock en una transacción
     salesRepository.decreaseStock(items);
   },
 };
