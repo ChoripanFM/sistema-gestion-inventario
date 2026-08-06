@@ -47,3 +47,8 @@ export interface ProductInput {
   stock: number;
   category_id?: number;
 }
+
+export interface SaleItem {
+  product_id: number;
+  quantity: number;
+}

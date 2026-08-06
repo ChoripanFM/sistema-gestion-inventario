@@ -1,17 +1,19 @@
 import { useState} from "react";
-import { LayoutGrid, Package, Boxes } from "lucide-react";
+import { LayoutGrid, Package, Boxes, ShoppingCart } from "lucide-react";
 import CategoriesPage from "./pages/CategoriesPage";
 import ProductsPage from "./pages/ProductsPage";
+import SalesPage from "./pages/SalesPage";
 
-type View = "categories" | "products";
+type View = "categories" | "products" | "sales";
 
 const NAV_ITEMS: { id: View; label: string; icon: typeof LayoutGrid }[] = [
+  { id: "sales", label: "Ventas", icon: ShoppingCart },
   { id: "categories", label: "Categorías", icon: LayoutGrid },
   { id: "products", label: "Productos", icon: Package },
 ];
 
 function App() {
-  const [view, setView] = useState<View>("categories");
+  const [view, setView] = useState<View>("sales");
 
   return (
     <div className="min-h-screen flex bg-bg text-ink font-body">
@@ -49,7 +51,9 @@ function App() {
       </aside>
 
       <main className="flex-1 px-10 py-8">
-        {view === "categories" ? <CategoriesPage /> : <ProductsPage />}
+        {view === "sales" && <SalesPage />}
+        {view === "products" && <ProductsPage />}
+        {view === "categories" && <CategoriesPage />}
       </main>
     </div>
   );
