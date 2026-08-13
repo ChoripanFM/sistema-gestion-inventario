@@ -1,17 +1,47 @@
 {
   "name": "inventario",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "electron/main.ts",
+  "type": "module",
   "scripts": {
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\""
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "build": "npm run build:client && npm run build:server",
+    "electron": "electron .",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.inventario.app",
+    "productName": "Inventario",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "server/dist/**/*",
+      "server/node_modules/**/*",
+      "client/dist/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "electron/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "concurrently": "^10.0.3"
+    "@electron/rebuild": "^4.2.0",
+    "concurrently": "^10.0.3",
+    "electron": "^43.4.0",
+    "electron-builder": "^26.15.3"
   }
 }
