@@ -11,7 +11,9 @@
     "build:server": "cd server && npm run build",
     "build": "npm run build:client && npm run build:server",
     "electron": "electron .",
-    "dist": "npm run build && electron-builder"
+    "dist": "npm run build && electron-builder",
+    "rebuild:sqlite": "npx electron-rebuild -f -w better-sqlite3 --module-dir server",
+    "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "appId": "com.inventario.app",
@@ -21,9 +23,23 @@
     },
     "files": [
       "electron/**/*",
-      "server/dist/**/*",
+      "client/dist/**/*",
       "server/node_modules/**/*",
       "client/dist/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "server/dist",
+        "to": "server/dist"
+      },
+      {
+        "from": "server/node_modules",
+        "to": "server/node_modules"
+      },
+      {
+        "from": "client/dist",
+        "to": "client/dist"
+      }
     ],
     "win": {
       "target": "nsis",
