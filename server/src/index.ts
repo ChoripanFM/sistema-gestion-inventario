@@ -27,6 +27,14 @@ app.use("/api/categories", categoriesRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/sales", salesRouter);
 
+app.use(express.static(path.join(__dirname, "../../client/dist")));
+app.get("/{*path}", (req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+});
+
 app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });
 });
