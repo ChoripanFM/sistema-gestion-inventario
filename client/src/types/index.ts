@@ -52,3 +52,16 @@ export interface SaleItem {
   product_id: number;
   quantity: number;
 }
+
+export interface SalesHistoryProduct {
+  productId: number | null;
+  productName: string;
+  quantity: number;
+}
+
+export interface SalesHistory {
+  date: string;
+  totalSales: number;
+  salesCount: number;
+  products: SalesHistoryProduct[];
+}

@@ -31,6 +31,14 @@ lerna-debug.log*
 # Archivos locales
 *.local
 
+# Respaldos generados por la app (no versionar datos reales del cliente)
+docs/respaldo-inventario-*.json
+docs/respaldo-inventario-*.zip
+*.zip
+
+# Clon anidado accidental del propio repositorio
+/sistema-gestion-inventario/
+
 # Editores
 .vscode/*
 !.vscode/extensions.json
@@ -41,3 +49,4 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+out/
