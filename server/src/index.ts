@@ -6,6 +6,7 @@ import "./db/init.js";
 import categoriesRouter from "./categories/categories.router.js";
 import productsRouter from "./products/products.router.js";
 import salesRouter from "./sales/sales.router.js";
+import backupRouter from "./backup/backup.router.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,6 +17,7 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:5173",
+    exposedHeaders: ["Content-Disposition"],
   }),
 );
 
@@ -26,6 +28,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/categories", categoriesRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/sales", salesRouter);
+app.use("/api/backup", backupRouter);
 
 app.use(express.static(path.join(__dirname, "../../client/dist")));
 app.get("/{*path}", (req, res, next) => {

@@ -1,4 +1,4 @@
-import type { SaleItem } from "../types";
+import type { SaleItem, SalesHistory } from "../types";
 
 const API_URL = "http://localhost:3000/api/sales";
 
@@ -25,4 +25,14 @@ export async function processSale(items: SaleItem[]): Promise<void> {
     body: JSON.stringify(items),
   });
   if (!response.ok) return parseError(response, "Error al procesar la venta");
+}
+
+export async function getSalesHistory(): Promise<SalesHistory> {
+  const response = await fetch(`${API_URL}/history`);
+
+  if (!response.ok) {
+    return parseError(response, "Error al obtener el historial de ventas");
+  }
+
+  return response.json();
 }

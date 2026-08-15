@@ -1,0 +1,42 @@
+{
+  "backupDate": "2026-08-15",
+  "type": "inventory",
+  "products": [
+    {
+      "id": 1,
+      "name": "polera",
+      "description": null,
+      "sku": "1",
+      "price": 5000,
+      "stock": 8,
+      "image": null,
+      "category_id": null,
+      "created_at": "2026-07-16 03:21:21",
+      "updated_at": "2026-08-15 05:04:05"
+    },
+    {
+      "id": 3,
+      "name": "Pantalon",
+      "description": "jeans azul",
+      "sku": "5",
+      "price": 5990,
+      "stock": 0,
+      "image": null,
+      "category_id": null,
+      "created_at": "2026-08-03 23:59:43",
+      "updated_at": "2026-08-15 04:43:08"
+    },
+    {
+      "id": 4,
+      "name": "polera gengar",
+      "description": null,
+      "sku": "10",
+      "price": 15000,
+      "stock": 0,
+      "image": "1786055964811-297325494.jpg",
+      "category_id": 6,
+      "created_at": "2026-08-06 22:39:24",
+      "updated_at": "2026-08-13 03:59:12"
+    }
+  ]
+}
