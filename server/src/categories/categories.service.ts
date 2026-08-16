@@ -2,11 +2,8 @@ import { categoriesRepository } from "./categories.repository.js";
 import { productsRepository } from "../products/products.repository.js";
 import { unlink } from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
 import { AppError } from "../errors/AppError.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { UPLOADS_PATH } from "../paths.js";
 
 export const categoriesService = {
   getAll() {
@@ -57,11 +54,7 @@ export const categoriesService = {
       const products = productsRepository.findAll(undefined, id) as any[];
       for (const product of products) {
         if (product.image) {
-          const imagePath = path.join(
-            __dirname,
-            "../../uploads",
-            product.image,
-          );
+          const imagePath = path.join(UPLOADS_PATH, product.image);
           unlink(imagePath).catch(() => {});
         }
       }

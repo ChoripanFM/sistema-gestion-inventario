@@ -3,10 +3,7 @@ import { categoriesRepository } from "../categories/categories.repository.js";
 import { AppError } from "../errors/AppError.js";
 import { unlink } from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { UPLOADS_PATH } from "../paths.js";
 
 function validateProductData(data: { name: string; price: any; stock: any }) {
   if (!data.name?.trim()) throw new AppError("El nombre es requerido", 400);
@@ -92,7 +89,7 @@ export const productsService = {
     }
 
     if (data.image && product.image) {
-      const imagePath = path.join(__dirname, "../../uploads", product.image);
+      const imagePath = path.join(UPLOADS_PATH, product.image);
       unlink(imagePath).catch(() => {}); // Si el archivo ya no existe, se ignora el error para no bloquear la operación
     }
 
@@ -104,7 +101,7 @@ export const productsService = {
     if (!product) throw new AppError("Producto no encontrado", 404);
 
     if (product.image) {
-      const imagePath = path.join(__dirname, "../../uploads", product.image);
+      const imagePath = path.join(UPLOADS_PATH, product.image);
       unlink(imagePath).catch(() => {});
     }
 

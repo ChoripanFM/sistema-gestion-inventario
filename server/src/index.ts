@@ -8,6 +8,7 @@ import productsRouter from "./products/products.router.js";
 import salesRouter from "./sales/sales.router.js";
 import backupRouter from "./backup/backup.router.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import { UPLOADS_PATH } from "./paths.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +24,7 @@ app.use(
 
 app.use(express.json());
 
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/uploads", express.static(UPLOADS_PATH));
 
 app.use("/api/categories", categoriesRouter);
 app.use("/api/products", productsRouter);

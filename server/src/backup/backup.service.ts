@@ -2,13 +2,8 @@ import archiver from "archiver";
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { fileURLToPath } from "url";
 import db from "../db/database.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const UPLOADS_PATH = path.join(__dirname, "../../uploads");
+import { UPLOADS_PATH } from "../paths.js";
 
 function getBackupName(): string {
   const now = new Date();
