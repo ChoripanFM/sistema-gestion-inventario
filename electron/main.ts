@@ -12,7 +12,7 @@ function getServerPath() {
   if (app.isPackaged) {
     return path.join(process.resourcesPath, "server", "dist", "index.js");
   }
-  return path.join(__dirname, "../server/dist/index.js");
+  return path.join(__dirname, "../../server/dist/index.js");
 }
 
 async function waitForServer(url: string, timeoutMs = 20000) {

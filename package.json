@@ -1,7 +1,7 @@
 {
   "name": "inventario",
   "version": "1.0.0",
-  "main": "electron/main.ts",
+  "main": "electron/dist/main.js",
   "type": "module",
   "scripts": {
     "dev:server": "cd server && npm run dev",
@@ -9,9 +9,9 @@
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "build:client": "cd client && npm run build",
     "build:server": "cd server && npm run build",
-    "build": "npm run build:client && npm run build:server",
-    "electron": "electron .",
-
+    "build:electron": "tsc -p electron/tsconfig.json",
+    "build": "npm run build:client && npm run build:server && npm run build:electron",
+    "electron": "npm run build:electron && electron .",
     "dist": "npm run build && electron-builder",
     "rebuild:sqlite": "npx electron-rebuild -f -w better-sqlite3 --module-dir server",
     "postinstall": "electron-builder install-app-deps"
@@ -59,6 +59,7 @@
     "@electron/rebuild": "^4.2.0",
     "concurrently": "^10.0.3",
     "electron": "^43.4.0",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "typescript": "^6.0.3"
   }
 }
