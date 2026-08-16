@@ -55,3 +55,20 @@ npm run dev:client
 
 1. Abrir `http://localhost:5173` en el navegador — debe aparecer la interfaz del inventario
 2. Abrir `http://localhost:3000/api/categories` — debe responder `[]`
+
+## `better-sqlite3` y Electron
+
+`better-sqlite3` es un módulo nativo (compilado). Electron trae su propio Node.js interno, distinto al del sistema, así que el binario compilado para uno **no sirve para el otro**. Si alternás entre correr el server suelto y correr la app empaquetada, vas a necesitar recompilar según el caso:
+
+```bash
+cd server
+npm rebuild better-sqlite3
+```
+
+Para volver a Electron:
+
+```bash
+npm run rebuild:sqlite
+```
+
+Si aparece un error tipo `NODE_MODULE_VERSION ... requiere ...`, es esto — no es un bug, hay que recompilar para el entorno que estás usando.
