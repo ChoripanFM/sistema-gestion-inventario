@@ -37,9 +37,27 @@ cd ..
 
 Esto descargará todas las librerías necesarias para hacer funcionar el proyecto (React, Express, etc).
 
+## Antes de ejecutar ⚠️: `better-sqlite3` y Electron
+
+`better-sqlite3` es un módulo nativo (compilado). Electron (que permite empaquetar el sistema en una app de escritorio) trae su propio Node.js interno, distinto al del sistema, así que el binario compilado para uno **no sirve para el otro**. Si alternas entre correr el server suelto y correr la app empaquetada, es necesario recompilar según el caso:
+
+```bash
+cd server
+npm rebuild better-sqlite3
+#Este es el comando que debería usarse para trabajar en el entorno de desarrolllo
+```
+
+Para volver a Electron:
+
+```bash
+npm run rebuild:sqlite
+```
+
+Si aparece un error tipo `NODE_MODULE_VERSION ... requiere ...`, es esto — no es un bug, hay que recompilar para el entorno que se está usando.
+
 ## Paso 3: Ejecutar el proyecto
 
-Desde la raíz del proyecto correr:
+Una vez usado el comando para recompilar, desde la raíz del proyecto correr:
 
 ```bash
 npm run dev
