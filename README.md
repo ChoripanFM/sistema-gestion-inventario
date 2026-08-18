@@ -1,26 +1,30 @@
 # Sistema de gestión de inventario
+
 ![Status](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)
 
-Sistema de gestión de inventario, pensado para funcionar de forma local y para un usuario.
+Sistema de gestión de inventario diseñado para funcionar de forma local y para un usuario único. Incluye gestión de productos, categorías y un módulo de ventas.
 
 ## Tecnologías
 
-| Herramienta  | Rol |
-| ------------- | ------------- |
-| React + Vite + TypeScript  | Interfaz de usuario  |
-| Tailwind CSS + shadcn/ui  | Estilos y componentes  |
-| Node.js + Express + TypeScript | Servidor y API REST |
-| SQLite + better-sqlite3 | Base de datos local |
+| Herramienta                      | Rol                                     |
+| -------------------------------- | --------------------------------------- |
+| React 19 + Vite + TypeScript     | Interfaz de usuario                     |
+| Tailwind CSS v4 + lucide-react   | Estilos e íconos                        |
+| Node.js + Express 5 + TypeScript | Servidor y API REST                     |
+| SQLite + better-sqlite3          | Base de datos local                     |
+| Electron                         | Empaquetado de aplicación de escritorio |
 
 ## Características del proyecto
 
-- Gestión de productos (CRUD)
-- Gestión de características (CRUD)
-- Clasificación de productos
-- Subida de imágenes
+- **Gestión de categorías** (CRUD)
+- **Gestión de productos** (CRUD)
+- Clasificación de productos por categoría
+- Subida de imágenes de productos
 - Vista previa de imágenes
-- Búsqueda de productos
-- Filtrado por categoría
+- Búsqueda y filtrado de productos
+- **Sistema de ventas** con carrito de compras
+- Aplicación de escritorio (Windows) empaquetada con Electron
+- Base de datos local (SQLite)
 
 ## Requisitos previos
 
@@ -51,8 +55,23 @@ npm run dev
 
 El servidor quedará en `http://localhost:3000` y el cliente en `http://localhost:5173`.
 
+## Documentación
+
+| #   | Documento                                                           | Tiempo                        |
+| --- | ------------------------------------------------------------------- | ----------------------------- |
+| 1️⃣  | [00-conceptos.md](docs/00-conceptos.md)                             | 15 min - Conceptos básicos    |
+| 2️⃣  | [01-correr-el-proyecto.md](docs/01-correr-el-proyecto.md)           | 10 min - Instalación          |
+| 3️⃣  | [02-estructura.md](docs/02-estructura.md)                           | 10 min - Dónde está cada cosa |
+| 4️⃣  | [03-flujo-ejemplo.md](docs/03-flujo-ejemplo.md)                     | 20 min - Ejemplo paso a paso  |
+| 5️⃣  | [04-frontend.md](docs/04-frontend.md)                               | 20 min - React y componentes  |
+| 6️⃣  | [05-backend.md](docs/05-backend.md)                                 | 20 min - Las 4 capas          |
+| 7️⃣  | [06-api-referencia.md](docs/06-api-referencia.md)                   | 📖 Referencia - Endpoints     |
+| 8️⃣  | [07-agregar-funcionalidades.md](docs/07-agregar-funcionalidades.md) | 30 min - Cómo agregar algo    |
+
 ## Estructura del proyecto
+
 Se decidió separar el proyecto en dos aplicaciones independientes, en una arquitectura monorepo:
+
 ```
 inventario/
 ├── client/                     # Frontend
@@ -62,7 +81,7 @@ inventario/
 │       ├── services/           # Llamadas a la API
 │       ├── types/              # Tipos TypeScript
 │       ├── App.tsx             # Componente raíz, orquesta qué página se muestra
-│       ├── main.tsx            # Punto de entrada de React  
+│       ├── main.tsx            # Punto de entrada de React
 │       └── index.css           # Estilos globales (importa Tailwind)
 ├── server/                     # Backend
 │   └── src/
@@ -76,6 +95,11 @@ inventario/
 │       │   ├── products.service.ts
 │       │   ├── products.controller.ts
 │       │   └── products.router.ts
+│       ├── sales/              # Módulo de ventas
+│       │   ├── sales.repository.ts
+│       │   ├── sales.service.ts
+│       │   ├── sales.controller.ts
+│       │   └── sales.router.ts
 │       ├── db/
 │       │   ├── database.ts     # Conexión SQLite
 │       │   ├── schema.ts       # Definición de tablas
@@ -89,14 +113,15 @@ inventario/
 ├── uploads/                    # Imágenes subidas
 └── inventario.db               # Base de datos SQLite
 ```
+
 ## Organización del proyecto
- 
-En la raíz existe un `package.json`, que tiene, como única función, facilitar la administración del proyecto a través de scripts globales; en este caso existe un script para correr el frontend y el cliente en la misma consola, con un único comando en la raíz (`npm run dev`). Esto no reemplaza ni afecta los `package.json` de `client` y `server`, cada uno administra sus dependencias y configuraciones de forma independiente.
- 
+
+En la raíz existe un `package.json` que tiene, como única función, facilitar la administración del proyecto a través de scripts globales; en este caso existe un script para correr el frontend y el cliente en la misma consola, con un único comando en la raíz (`npm run dev`). Esto no reemplaza ni afecta los `package.json` de `client` y `server`. Cada uno administra sus dependencias y configuraciones de forma independiente.
+
 ## Arquitectura del backend
- 
+
 El backend sigue una arquitectura por capas:
- 
+
 ```
 Cliente
     │
@@ -115,8 +140,9 @@ Repositorio        → interactúa con la base de datos
     ▼
 Base de datos
 ```
- 
+
 Esta arquitectura facilita:
+
 - Mantenimiento y legibilidad del código
 - Incorporación de nuevas funcionalidades
 - Posible migración futura a otro motor de base de datos
@@ -125,16 +151,17 @@ Esta arquitectura facilita:
 
 ### Categorías
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/api/categories` | Listar todas las categorías |
-| GET | `/api/categories/:id` | Obtener una categoría por id |
-| POST | `/api/categories` | Crear una categoría |
-| PUT | `/api/categories/:id` | Actualizar una categoría |
-| DELETE | `/api/categories/:id` | Eliminar una categoría |
+| Método | Ruta                                      | Descripción                        |
+| ------ | ----------------------------------------- | ---------------------------------- |
+| GET    | `/api/categories`                         | Listar todas las categorías        |
+| GET    | `/api/categories/:id`                     | Obtener una categoría por id       |
+| POST   | `/api/categories`                         | Crear una categoría                |
+| PUT    | `/api/categories/:id`                     | Actualizar una categoría           |
+| DELETE | `/api/categories/:id`                     | Eliminar una categoría             |
 | DELETE | `/api/categories/:id?deleteProducts=true` | Eliminar categoría y sus productos |
 
 #### Ejemplo de body (crear/actualizar):
+
 ```json
 {
   "name": "Electrónica",
@@ -144,29 +171,29 @@ Esta arquitectura facilita:
 
 ### Productos
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/api/products` | Listar productos |
-| GET | `/api/products?search=laptop` | Buscar por nombre |
-| GET | `/api/products?categoryId=1` | Filtrar por categoría |
-| GET | `/api/products/:id` | Obtener un producto por id |
-| POST | `/api/products` | Crear un producto |
-| PUT | `/api/products/:id` | Actualizar un producto |
-| DELETE | `/api/products/:id` | Eliminar un producto |
+| Método | Ruta                          | Descripción                |
+| ------ | ----------------------------- | -------------------------- |
+| GET    | `/api/products`               | Listar productos           |
+| GET    | `/api/products?search=laptop` | Buscar por nombre          |
+| GET    | `/api/products?categoryId=1`  | Filtrar por categoría      |
+| GET    | `/api/products/:id`           | Obtener un producto por id |
+| POST   | `/api/products`               | Crear un producto          |
+| PUT    | `/api/products/:id`           | Actualizar un producto     |
+| DELETE | `/api/products/:id`           | Eliminar un producto       |
 
 Los formularios de productos deben enviarse como `multipart/form-data` porque incluyen imágenes.
 
 #### Campos del producto:
 
-| Campo | Tipo | Requerido |
-|---|---|---|
-| `name` | string | Sí |
-| `price` | number | Sí |
-| `stock` | number | Sí |
-| `description` | string | No |
-| `sku` | string | No |
-| `category_id` | number | No |
-| `image` | File | No |
+| Campo         | Tipo   | Requerido |
+| ------------- | ------ | --------- |
+| `name`        | string | Sí        |
+| `price`       | number | Sí        |
+| `stock`       | number | Sí        |
+| `description` | string | No        |
+| `sku`         | string | No        |
+| `category_id` | number | No        |
+| `image`       | File   | No        |
 
 ### Imágenes
 
@@ -184,7 +211,4 @@ http://localhost:3000/uploads/nombre-imagen.jpg
 
 ## Otras consideraciones
 
-- **SQLite en modo WAL:** mejora el rendimiento en lecturas concurrentes.
-- **Foreign keys activadas explícitamente:** SQLite las desactiva por defecto, se activan con `PRAGMA foreign_keys = ON`.
 - **AppError:** clase de error personalizada que permite lanzar errores con código HTTP desde cualquier capa y capturarlos en un único middleware global.
-- **category_id opcional:** un producto puede existir sin categoría, quedando con `category_id = NULL`.

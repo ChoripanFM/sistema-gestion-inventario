@@ -45,7 +45,7 @@ const storage = multer.diskStorage({
 });
 ```
 
-El nombre del archivo se genera con un timestamp más un número aleatorio para evitar conflictos.
+El nombre del archivo se genera con un timestamp más un número aleatorio para evitar conflictos entre imágenes.
 
 **Validación de tipo:**
 

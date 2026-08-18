@@ -10,8 +10,8 @@
     "build:client": "cd client && npm run build",
     "build:server": "cd server && npm run build",
     "build": "npm run build:client && npm run build:server",
-    "electron": "electron .",
     "dist": "npm run build && electron-builder",
+    "electron": "electron .",
     "rebuild:sqlite": "npx electron-rebuild -f -w better-sqlite3 --module-dir server",
     "postinstall": "electron-builder install-app-deps"
   },

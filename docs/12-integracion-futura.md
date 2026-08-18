@@ -2,7 +2,7 @@
 
 El sistema de inventario está diseñado para integrarse a futuro con un catálogo web.
 
-## Cómo funciona la integración
+## Integración recomendada
 
 El inventario seguirá funcionando de forma local y offline como hasta ahora. La integración consiste en exponer una parte de la API al exterior para que el catálogo web pueda consumirla.
 
@@ -136,3 +136,11 @@ El backend Express se mantiene en la red local. Solo el endpoint `/api/public` s
 3. Crear el módulo `public/` en el backend con su router, controller y service
 4. Configurar Nginx para exponer solo `/api/public` y `/uploads` al exterior
 5. Construir el catálogo web como proyecto separado que consuma `/api/public`
+
+**Sin autenticación actualmente**
+
+El proyecto es de un único usuario. Para múltiples usuarios:
+
+1. Agregar tabla `users`
+2. Implementar login/JWT
+3. Asociar datos a usuarios
