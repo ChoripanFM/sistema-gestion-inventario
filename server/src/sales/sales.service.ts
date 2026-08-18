@@ -25,7 +25,7 @@ export const salesService = {
         );
       }
 
-      const product = salesRepository.findProductById(item.product_id) as any;
+      const product = salesRepository.findProductById(item.product_id);
       if (!product) {
         throw new AppError(
           `Producto con id ${item.product_id} no encontrado`,
@@ -41,6 +41,10 @@ export const salesService = {
       }
     }
 
-    salesRepository.decreaseStock(items);
+    return salesRepository.createSale(items);
+  },
+
+  getHistory() {
+    return salesRepository.getHistory();
   },
 };

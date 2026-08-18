@@ -12,7 +12,7 @@ function getServerPath() {
   if (app.isPackaged) {
     return path.join(process.resourcesPath, "server", "dist", "index.js");
   }
-  return path.join(__dirname, "../server/dist/index.js");
+  return path.join(__dirname, "../../server/dist/index.js");
 }
 
 async function waitForServer(url: string, timeoutMs = 20000) {
@@ -36,6 +36,11 @@ async function waitForServer(url: string, timeoutMs = 20000) {
 
 async function startServer() {
   try {
+      // El server lee USER_DATA_PATH (vía server/src/paths.ts) para saber dónde
+    // guardar la base de datos y las imágenes. Tiene que quedar seteada ANTES
+    // de importar el server, porque paths.ts la lee en su nivel superior.
+    process.env.USER_DATA_PATH = app.getPath("userData");
+    
     const serverPath = getServerPath();
     const serverUrl = new URL(`file:///${serverPath.replace(/\\/g, "/")}`);
     await import(serverUrl.href);

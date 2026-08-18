@@ -31,6 +31,35 @@ db.exec(`
   );
 `);
 
+// --- Tabla: sales ---
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sales (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    total       REAL NOT NULL CHECK (total >= 0),
+    created_at  TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+  );
+`);
+
+// --- Tabla: sale_items ---
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sale_items (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    sale_id     INTEGER NOT NULL,
+    product_id  INTEGER,
+    product_name TEXT NOT NULL,
+    quantity    INTEGER NOT NULL CHECK (quantity > 0),
+    unit_price  REAL NOT NULL CHECK (unit_price >= 0),
+
+    FOREIGN KEY (sale_id)
+      REFERENCES sales(id)
+      ON DELETE CASCADE,
+
+    FOREIGN KEY (product_id)
+      REFERENCES products(id)
+      ON DELETE SET NULL
+  );
+`);
+
 // --- Índices ---
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_products_category_id
@@ -40,6 +69,21 @@ db.exec(`
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_products_name
     ON products(name);
+`);
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_sales_created_at
+    ON sales(created_at);
+`);
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_sale_items_sale_id
+    ON sale_items(sale_id);
+`);
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_sale_items_product_id
+    ON sale_items(product_id);
 `);
 
 // --- Triggers: mantener updated_at sincronizado automáticamente ---
