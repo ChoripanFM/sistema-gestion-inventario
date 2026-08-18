@@ -34,7 +34,7 @@ La recompilación utiliza `node-gyp`, por lo que requiere un compilador de C++. 
 1. Descargar desde [visualstudio.microsoft.com/visual-cpp-build-tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 2. Durante la instalación marcar únicamente **"Desarrollo de escritorio con C++"**
 
-Una vez terminada la instalación, ejecutar:
+Una vez terminada la instalación, ejecutar en la **raíz del proyecto**:
 
 ```bash
 npm run rebuild:sqlite

@@ -47,7 +47,7 @@ npm rebuild better-sqlite3
 #Este es el comando que debería usarse para trabajar en el entorno de desarrolllo
 ```
 
-Para volver a Electron:
+Para volver a Electron, ejecutar en la **raíz del proyecto**:
 
 ```bash
 npm run rebuild:sqlite
