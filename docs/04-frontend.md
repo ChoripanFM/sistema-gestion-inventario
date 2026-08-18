@@ -44,6 +44,7 @@ Una página es una **pantalla completa** que ve el usuario. Cada página:
 | Página               | Qué hace                                                                                                         |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `ProductsPage.tsx`   | Tabla de productos, búsqueda en servidor con debounce, filtro por categoría, selección múltiple y borrado masivo |
+| `HistoryPage.tsx`    | Resumen del día, total vendido, ventas realizadas y detalle de productos vendidos                                |
 | `CategoriesPage.tsx` | Tabla de categorías, búsqueda local, conteo de productos por categoría                                           |
 | `SalesPage.tsx`      | Carrito de ventas con descuento automático de stock                                                              |
 
@@ -68,11 +69,12 @@ Un componente es una **pieza pequeña reutilizable**:
 
 Un servicio es un archivo que se **comunica con el servidor**:
 
-| Componente           | Qué hace                                       |
-| -------------------- | ---------------------------------------------- |
-| `productService.ts`  | Pide productos al servidor, crea, edita, borra |
-| `categoryService.ts` | Lo mismo para categorías                       |
-| `salesService.ts`    | Procesa ventas y descuenta stock               |
+| Componente           | Qué hace                                             |
+| -------------------- | ---------------------------------------------------- |
+| `backupService.ts`   | Genera y descarga el respaldo del inventario         |
+| `categoryService.ts` | Lo mismo para categorías                             |
+| `productService.ts`  | Pide productos al servidor, crea, edita, borra       |
+| `salesService.ts`    | Procesa ventas, descuenta stock y consulta historial |
 
 **Importante**: Ningún componente llama directamente a `fetch()`. Siempre va a través del servicio.
 
@@ -118,6 +120,17 @@ export interface Category {
   description: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface SalesHistory {
+  date: string;
+  totalSales: number;
+  salesCount: number;
+  products: Array<{
+    productId: number | null;
+    productName: string;
+    quantity: number;
+  }>;
 }
 ```
 

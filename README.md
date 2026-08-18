@@ -1,34 +1,53 @@
 # Sistema de gestión de inventario
 
-![Status](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)
+Sistema de gestión de inventario diseñado para funcionar de forma local y para un usuario único.
 
-Sistema de gestión de inventario diseñado para funcionar de forma local y para un usuario único. Incluye gestión de productos, categorías y un módulo de ventas.
+## Stack
 
-## Tecnologías
+- React + Vite + TypeScript
+- Node.js + Express + TypeScript
+- SQLite
+- Electron para app de escritorio
+- Tailwind CSS
 
-| Herramienta                      | Rol                                     |
-| -------------------------------- | --------------------------------------- |
-| React 19 + Vite + TypeScript     | Interfaz de usuario                     |
-| Tailwind CSS v4 + lucide-react   | Estilos e íconos                        |
-| Node.js + Express 5 + TypeScript | Servidor y API REST                     |
-| SQLite + better-sqlite3          | Base de datos local                     |
-| Electron                         | Empaquetado de aplicación de escritorio |
+## Funcionalidades
 
-## Características del proyecto
+- CRUD de categorías y productos
+- Carga y gestión de imágenes
+- Búsqueda y filtrado por categoría
+- Carrito de ventas con validación de stock
+- Registro de ventas
+- Resumen del día con:
+  - total vendido
+  - cantidad de ventas realizadas
+  - productos vendidos agrupados por producto
+- Descarga de respaldo del inventario en ZIP
+- Base de datos e imágenes incluidas en el respaldo
 
-- **Gestión de categorías** (CRUD)
-- **Gestión de productos** (CRUD)
-- Clasificación de productos por categoría
-- Subida de imágenes de productos
-- Vista previa de imágenes
-- Búsqueda y filtrado de productos
-- **Sistema de ventas** con carrito de compras
-- Aplicación de escritorio (Windows) empaquetada con Electron
-- Base de datos local (SQLite)
-
-## Requisitos previos
+## Requisitos
 
 - Node.js 20 o superior
+
+## Antes de ejecutar ⚠️: `better-sqlite3` y Electron
+
+`better-sqlite3` es un módulo nativo compilado. Electron trae su propio Node.js interno, distinto al del sistema, así que el binario compilado para uno no sirve para el otro.
+
+Si alternas entre correr el servidor local y la app empaquetada, es necesario recompilar según el entorno que estés usando:
+
+```bash
+cd server
+npm rebuild better-sqlite3
+```
+
+Este es el comando recomendado para trabajar en el entorno de desarrollo.
+
+Para usar Electron:
+
+```bash
+npm run rebuild:sqlite
+```
+
+Si aparece un error del tipo `NODE_MODULE_VERSION ... requiere ...`, normalmente es por esto y hay que recompilar para el entorno actual.
 
 ## Instalación y ejecución
 
@@ -53,162 +72,79 @@ cd ..
 npm run dev
 ```
 
-El servidor quedará en `http://localhost:3000` y el cliente en `http://localhost:5173`.
+La app queda disponible en:
 
-## Documentación
+- Frontend: http://localhost:5173
+- Backend: http://localhost:3000
 
-| #   | Documento                                                           | Tiempo                        |
-| --- | ------------------------------------------------------------------- | ----------------------------- |
-| 1️⃣  | [00-conceptos.md](docs/00-conceptos.md)                             | 15 min - Conceptos básicos    |
-| 2️⃣  | [01-correr-el-proyecto.md](docs/01-correr-el-proyecto.md)           | 10 min - Instalación          |
-| 3️⃣  | [02-estructura.md](docs/02-estructura.md)                           | 10 min - Dónde está cada cosa |
-| 4️⃣  | [03-flujo-ejemplo.md](docs/03-flujo-ejemplo.md)                     | 20 min - Ejemplo paso a paso  |
-| 5️⃣  | [04-frontend.md](docs/04-frontend.md)                               | 20 min - React y componentes  |
-| 6️⃣  | [05-backend.md](docs/05-backend.md)                                 | 20 min - Las 4 capas          |
-| 7️⃣  | [06-api-referencia.md](docs/06-api-referencia.md)                   | 📖 Referencia - Endpoints     |
-| 8️⃣  | [07-agregar-funcionalidades.md](docs/07-agregar-funcionalidades.md) | 30 min - Cómo agregar algo    |
+## Estructura principal
 
-## Estructura del proyecto
-
-Se decidió separar el proyecto en dos aplicaciones independientes, en una arquitectura monorepo:
-
-```
+```text
 inventario/
-├── client/                     # Frontend
-│   └── src/
-│       ├── components/         # Componentes reutilizables
-│       ├── pages/              # Páginas
-│       ├── services/           # Llamadas a la API
-│       ├── types/              # Tipos TypeScript
-│       ├── App.tsx             # Componente raíz, orquesta qué página se muestra
-│       ├── main.tsx            # Punto de entrada de React
-│       └── index.css           # Estilos globales (importa Tailwind)
-├── server/                     # Backend
-│   └── src/
-│       ├── categories/         # Módulo de categorías
-│       │   ├── categories.repository.ts
-│       │   ├── categories.service.ts
-│       │   ├── categories.controller.ts
-│       │   └── categories.router.ts
-│       ├── products/           # Módulo de productos
-│       │   ├── products.repository.ts
-│       │   ├── products.service.ts
-│       │   ├── products.controller.ts
-│       │   └── products.router.ts
-│       ├── sales/              # Módulo de ventas
-│       │   ├── sales.repository.ts
-│       │   ├── sales.service.ts
-│       │   ├── sales.controller.ts
-│       │   └── sales.router.ts
-│       ├── db/
-│       │   ├── database.ts     # Conexión SQLite
-│       │   ├── schema.ts       # Definición de tablas
-│       │   └── init.ts         # Inicialización de base de datos
-│       ├── errors/
-│       │   └── AppError.ts     # Clase de error personalizada
-│       ├── middlewares/
-│       │   ├── errorHandler.ts # Manejador global de errores
-│       │   └── upload.ts       # Configuración de multer para imágenes
-│       └── index.ts            # Punto de entrada del servidor
-├── uploads/                    # Imágenes subidas
-└── inventario.db               # Base de datos SQLite
+├── client/          # Frontend React
+├── docs/            # Documentación del proyecto
+├── electron/        # App de escritorio
+├── server/          # API y lógica de negocio
+│   └── uploads/         # Imágenes del inventario
+│   └── inventario.db        # Base de datos SQLite
+│
+├── package.json     # Scripts globales
+├── README.md        # Documentación general
+└── release/         # Build de Electron
 ```
 
-## Organización del proyecto
+## Endpoints principales
 
-En la raíz existe un `package.json` que tiene, como única función, facilitar la administración del proyecto a través de scripts globales; en este caso existe un script para correr el frontend y el cliente en la misma consola, con un único comando en la raíz (`npm run dev`). Esto no reemplaza ni afecta los `package.json` de `client` y `server`. Cada uno administra sus dependencias y configuraciones de forma independiente.
+### Ventas
 
-## Arquitectura del backend
-
-El backend sigue una arquitectura por capas:
-
-```
-Cliente
-    │
-    ▼
-Ruta               → define los endpoints
-    │
-    ▼
-Controlador        → maneja las peticiones HTTP
-    │
-    ▼
-Servicio           → lógica de negocio y validaciones
-    │
-    ▼
-Repositorio        → interactúa con la base de datos
-    │
-    ▼
-Base de datos
-```
-
-Esta arquitectura facilita:
-
-- Mantenimiento y legibilidad del código
-- Incorporación de nuevas funcionalidades
-- Posible migración futura a otro motor de base de datos
-
-## API REST
-
-### Categorías
-
-| Método | Ruta                                      | Descripción                        |
-| ------ | ----------------------------------------- | ---------------------------------- |
-| GET    | `/api/categories`                         | Listar todas las categorías        |
-| GET    | `/api/categories/:id`                     | Obtener una categoría por id       |
-| POST   | `/api/categories`                         | Crear una categoría                |
-| PUT    | `/api/categories/:id`                     | Actualizar una categoría           |
-| DELETE | `/api/categories/:id`                     | Eliminar una categoría             |
-| DELETE | `/api/categories/:id?deleteProducts=true` | Eliminar categoría y sus productos |
-
-#### Ejemplo de body (crear/actualizar):
-
-```json
-{
-  "name": "Electrónica",
-  "description": "Productos electrónicos"
-}
-```
+- `POST /api/sales` — procesar una venta
+- `GET /api/sales/history` — obtener resumen del día
 
 ### Productos
 
-| Método | Ruta                          | Descripción                |
-| ------ | ----------------------------- | -------------------------- |
-| GET    | `/api/products`               | Listar productos           |
-| GET    | `/api/products?search=laptop` | Buscar por nombre          |
-| GET    | `/api/products?categoryId=1`  | Filtrar por categoría      |
-| GET    | `/api/products/:id`           | Obtener un producto por id |
-| POST   | `/api/products`               | Crear un producto          |
-| PUT    | `/api/products/:id`           | Actualizar un producto     |
-| DELETE | `/api/products/:id`           | Eliminar un producto       |
+- `GET /api/products`
+- `POST /api/products`
+- `PUT /api/products/:id`
+- `DELETE /api/products/:id`
 
-Los formularios de productos deben enviarse como `multipart/form-data` porque incluyen imágenes.
+### Categorías
 
-#### Campos del producto:
+- `GET /api/categories`
+- `POST /api/categories`
+- `PUT /api/categories/:id`
+- `DELETE /api/categories/:id`
 
-| Campo         | Tipo   | Requerido |
-| ------------- | ------ | --------- |
-| `name`        | string | Sí        |
-| `price`       | number | Sí        |
-| `stock`       | number | Sí        |
-| `description` | string | No        |
-| `sku`         | string | No        |
-| `category_id` | number | No        |
-| `image`       | File   | No        |
+### Respaldo
 
-### Imágenes
+- `GET /api/backup` — descarga un ZIP con la base de datos y las imágenes del inventario
 
-Las imágenes se sirven como archivos estáticos desde:
+## Historial y respaldo
 
-```
-http://localhost:3000/uploads/nombre-imagen.jpg
-```
+La página de historial muestra:
 
-- Al eliminar un producto, la imagen se elimina automáticamente del servidor.
-- Al actualizar la imagen de un producto, la imagen anterior se elimina automáticamente.
-- Al eliminar una categoría con `deleteProducts=true`, las imágenes de los productos también se eliminan.
+- total vendido del día
+- cantidad total de ventas
+- detalle de productos vendidos
+- botón para descargar un respaldo del inventario
 
-**A considerar:** se usa **Multer** para manejar la subida de imágenes en los endpoints de productos. Las imágenes se almacenan como archivos en la carpeta uploads/ y en la base de datos solo se guarda el nombre del archivo. La configuración de multer se encuentra en server/src/middlewares/upload.ts e incluye validación de tipo de archivo (JPG, PNG, WEBP) y un límite de 5MB por imagen.
+El respaldo se genera con una snapshot de SQLite y se entrega en formato ZIP, incluyendo:
 
-## Otras consideraciones
+- `inventario.db`
+- carpeta `uploads/`
 
-- **AppError:** clase de error personalizada que permite lanzar errores con código HTTP desde cualquier capa y capturarlos en un único middleware global.
+## Documentación
+
+- [docs/01-conceptos.md](docs/01-conceptos.md)
+- [docs/02-correr-el-proyecto.md](docs/02-correr-el-proyecto.md)
+- [docs/03-estructura.md](docs/03-estructura.md)
+- [docs/04-frontend.md](docs/04-frontend.md)
+- [docs/05-diseno-visual.md](docs/05-diseno-visual.md)
+- [docs/06-backend.md](docs/06-backend.md)
+- [docs/07-base-de-datos.md](docs/07-base-de-datos.md)
+- [docs/08-api.md](docs/08-api.md)
+- [docs/09-manejo-de-errores.md](docs/09-manejo-de-errores.md)
+- [docs/10-imagenes.md](docs/10-imagenes.md)
+- [docs/11-flujo-ejemplo.md](docs/11-flujo-ejemplo.md)
+- [docs/12-integracion-futura.md](docs/12-integracion-futura.md)
+- [docs/13-respaldo-de-datos.md](docs/13-respaldo-de-datos.md)
+- [docs/14-aplicacion-de-escritorio.md](docs/14-aplicacion-de-escritorio.md)

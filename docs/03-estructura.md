@@ -19,6 +19,8 @@ Aquí está todo lo que se ve en pantalla (React):
 ```
 client/
 ├── src/
+│   ├── components/            # Componentes visuales reutilizables
+│   │   ├── CategoryForm.tsx    # Formulario categoría
 │   │   ├── CategoryTable.tsx  # Tabla de categorías
 │   │   ├── ConfirmDialog.tsx  # Modal de confirmación
 │   │   ├── ErrorBanner.tsx    # Mensaje de error
@@ -29,13 +31,15 @@ client/
 │   │
 │   ├── pages/                 # Pantallas completas
 │   │   ├── CategoriesPage.tsx # Página de categorías
+│   │   ├── HistoryPage.tsx    # Historial del día y backup del inventario
 │   │   ├── SalesPage.tsx      # Página de ventas
 │   │   └── ProductsPage.tsx   # Página de productos
 │   │
 │   ├── services/              # Comunica con el servidor
+│   │   ├── backupService.ts   # Descarga del respaldo del inventario
 │   │   ├── categoryService.ts # Peticiones de categorías
 │   │   ├── productService.ts  # Peticiones de productos
-│   │   └── salesService.ts    # Peticiones de ventas
+│   │   └── salesService.ts    # Peticiones de ventas e historial
 │   │
 │   ├── types/
 │   │   └── index.ts           # Definiciones de datos (TypeScript)

@@ -281,3 +281,52 @@ Content-Type: application/json
 - `400` - La cantidad debe ser un entero positivo
 - `404` - Producto con id X no encontrado
 - `409` - Stock insuficiente para el producto X
+
+### Resumen del historial del día
+
+```
+GET /api/sales/history
+```
+
+Devuelve un resumen de las ventas realizadas en la fecha actual.
+
+**Respuesta:** `200` + objeto:
+
+```json
+{
+  "date": "2026-08-18",
+  "totalSales": 245000,
+  "salesCount": 3,
+  "products": [
+    {
+      "productId": 5,
+      "productName": "Raspberry Pi",
+      "quantity": 8
+    },
+    {
+      "productId": 2,
+      "productName": "Galletas",
+      "quantity": 4
+    }
+  ]
+}
+```
+
+| Campo        | Tipo   | Descripción                                  |
+| ------------ | ------ | -------------------------------------------- |
+| `date`       | string | Fecha del resumen en formato `YYYY-MM-DD`    |
+| `totalSales` | number | Total acumulado de ventas del día            |
+| `salesCount` | number | Cantidad de ventas registradas               |
+| `products`   | array  | Productos vendidos agrupados por nombre e ID |
+
+**Datos de cada producto:**
+
+- `productId`: identificador del producto
+- `productName`: nombre del producto al momento de venderse
+- `quantity`: total de unidades vendidas del producto en el día
+
+**Uso:**
+
+- Se usa para renderizar la pantalla de historial en el frontend
+- Muestra el total vendido, la cantidad de ventas y el detalle por producto
+- Permite visualizar una vista rápida del rendimiento del día
