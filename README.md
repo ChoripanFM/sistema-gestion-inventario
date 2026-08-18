@@ -134,6 +134,7 @@ El respaldo se genera con una snapshot de SQLite y se entrega en formato ZIP, in
 
 ## Documentación
 
+- [docs/00-leer-documentacion.md](docs/00-leer-documentacion.md)
 - [docs/01-conceptos.md](docs/01-conceptos.md)
 - [docs/02-correr-el-proyecto.md](docs/02-correr-el-proyecto.md)
 - [docs/03-estructura.md](docs/03-estructura.md)

@@ -82,3 +82,33 @@ Esto mejora la experiencia de usuario y evita que el usuario crea que la acción
 - El respaldo incluye la base de datos y las imágenes, no solo los registros
 - Los archivos temporales se eliminan después de la descarga
 - Si la carpeta `uploads` no existe, la operación falla con un error claro
+
+## Ubicación de los datos en Windows
+
+En la aplicación empaquetada, la base de datos y las imágenes se guardan fuera
+de la carpeta de instalación, en la carpeta de datos de usuario de Electron:
+
+```text
+%APPDATA%\Inventario\
+```
+
+La ruta completa suele ser:
+
+```text
+C:\Users\<usuario>\AppData\Roaming\Inventario\
+```
+
+Dentro de esta carpeta se encuentran:
+
+```text
+inventario.db
+uploads\
+```
+
+## Restaurar un respaldo
+
+1. Cierra la aplicación Inventario.
+2. Abre el archivo ZIP del respaldo.
+3. Copia `inventario.db` a `%APPDATA%\Inventario\` y reemplaza el archivo existente.
+4. Copia la carpeta `uploads` a `%APPDATA%\Inventario\` y combina o reemplaza los archivos existentes.
+5. Abre nuevamente la aplicación y verifica los productos y sus imágenes.
