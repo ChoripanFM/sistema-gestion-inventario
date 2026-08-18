@@ -1,6 +1,8 @@
 # Sistema de gestión de inventario
 
-Sistema de gestión de inventario diseñado para funcionar de forma local y para un usuario único.
+Sistema de gestión de inventario diseñado para funcionar de forma local y para un usuario.
+
+<img width="1276" height="658" alt="Screenshot 2026-08-18 121335" src="https://github.com/user-attachments/assets/37799cf0-aec9-4282-80b9-a37901355ba6" />
 
 ## Stack
 
